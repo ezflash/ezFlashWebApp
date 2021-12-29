@@ -1,0 +1,62 @@
+@import "../node_modules/materialize-css/sass/components/_color-variables.scss";
+$primary-color: color("blue", "lighten-2");
+$primary-color-light: false !default;
+$primary-color-dark: false !default;
+@if not $primary-color-light {
+  $primary-color-light: lighten(red, 30%);
+}
+
+@if not $primary-color-dark {
+  $primary-color-dark: darken(blue, 15%);
+}
+
+$secondary-color: color("red", "lighten-1") !default;
+$success-color: color("yellow", "base") !default;
+$error-color: color("red", "base") !default;
+$link-color: color("light-blue", "darken-1") !default;
+@import "../node_modules/materialize-css/sass/materialize.scss";
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+.suota-drop-zone {
+  height: 100px;
+  margin: auto;
+  border: 2px $primary-color;
+  background-color: color("grey", "lighten-3");
+  border-radius: 5px;
+  border-color: $primary-color;
+}
+
+.suota-drop-zone__drop-zone {
+  height: 100px;
+  margin: auto;
+  border: 2px dotted #0782d0;
+  border-radius: 30px;
+}
+
+.suota-drop-zone__drop-zone--over {
+  background-color: rgba(147, 147, 147, 0.5);
+}
+
+.suota-drop-zone__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: #0782d0;
+}
+
+.suota-drop-zone__drop-zone-label {
+  text-align: center;
+}
+
+.suota-drop-zone__file-input {
+  display: none;
+}

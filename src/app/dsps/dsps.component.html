@@ -1,0 +1,92 @@
+<h1 class="center-align">Serial Port Service</h1>
+<div class="container">
+  <div class="row">
+    <div class="col l9 m9">
+      <div class="row">
+        <div class="col s2">
+          <a
+            [ngClass]="{ pulse: connected === false }"
+            class="btn-floating btn-large"
+            (click)="scanDevice()"
+            ><i class="material-icons">wifi</i></a
+          >
+        </div>
+        <p class="col s10">Click to scan serial port devices in range</p>
+      </div>
+    </div>
+    <div class="col l3 m3">
+      <span
+        *ngIf="connected == true; else disconnectedBlock"
+        class="new badge green"
+        data-badge-caption="connected"
+      ></span>
+      <ng-template #disconnectedBlock
+        ><span class="new badge" data-badge-caption="disconnected"></span
+      ></ng-template>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <h5>Data to peripheral</h5>
+  <div class="row">
+    <div class="col s10">
+      <input
+        #box
+        type="text"
+        name=""
+        id="dataToPeripheral"
+        (keyup)="onKey(box.value)"
+      />
+      <p>{{ dataToSever }}</p>
+    </div>
+    <div class="col s2">
+      <button
+        [disabled]="connected === false"
+        class="btn waves-effect waves-light"
+        (click)="sendMessage()"
+      >
+        Send<i class="material-icons right">send</i>
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12">
+      <h5>Data from peripheral</h5>
+    </div>
+    <div class="col s12">
+      <a
+        [ngClass]="{ disabled: connected === false }"
+        class="waves-effect waves-light btn"
+        ><i class="material-icons">dehaze</i></a
+      >
+      <a
+        [ngClass]="{ disabled: connected === false }"
+        class="waves-effect waves-light btn"
+        ><i class="material-icons">file_download</i></a
+      >
+      <a
+        [ngClass]="{ disabled: connected === false }"
+        class="waves-effect waves-light btn"
+        ><i class="material-icons">clear_all</i></a
+      >
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12">
+      <div class="row">
+        <!-- <p>{{dataFromServer}}</p> -->
+        <div class="input-field col s12">
+          <textarea
+            readonly
+            id="textarea1"
+            class="materialize-textarea"
+            [(ngModel)]="dataFromServer"
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

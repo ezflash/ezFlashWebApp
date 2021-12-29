@@ -1,0 +1,37 @@
+<nav>
+    <div class="nav-wrapper z-depth-5">
+        <!-- <a href="#" class="brand-logo">Logo</a> -->
+        <a href="/dsps" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a
+    >
+    <ul id="dropdown1" class="dropdown-content">
+      <li><a href="#!">one</a></li>
+        <li><a href="#!">two</a></li>
+        <li class="divider"></li>
+        <li><a href="#!">three</a></li>
+        </ul>
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+            <li>
+                <a routerLink="home"><i class="material-icons">home</i></a>
+            </li>
+            <li><a routerLink="suota">SUOTA</a></li>
+            <li><a routerLink="dsps">DSPS</a></li>
+            <li><a routerLink="booter">Booter</a></li>
+            <li><a routerLink="md">md</a></li>
+            <li>
+                <a class="dropdown-trigger" data-target="dropdown1">Dropdown<i class="material-icons right">arrow_drop_down</i></a
+        >
+      </li>
+    </ul>
+    <a routerLink="home" class="brand-logo right">ezFlash Web App</a>
+    </div>
+</nav>
+<ul class="sidenav" id="mobile-demo">
+    <li>
+        <a routerLink="home"><i class="material-icons">home</i> Home</a>
+    </li>
+    <li><a routerLink="suota">SUOTA</a></li>
+    <li><a routerLink="dsps">DSPS</a></li>
+    <li><a routerLink="booter">Booter</a></li>
+</ul>
+
+<router-outlet></router-outlet>

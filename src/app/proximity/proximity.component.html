@@ -1,0 +1,93 @@
+<h1 class="center-align">Proximity Reporter</h1>
+<div class="container">
+  <div class="row">
+    <div class="col l9 m9">
+      <div class="row">
+        <div class="col s2">
+          <a
+            *ngIf="connected === false; else connectedIcon"
+            class="btn-floating btn-large pulse"
+            (click)="scanDevice()"
+            ><i class="material-icons">wifi</i></a
+          >
+          <ng-template #connectedIcon
+            ><a class="btn-floating btn-large" (click)="scanDevice()"
+              ><i class="material-icons">close</i></a
+            ></ng-template
+          >
+        </div>
+        <p class="col s10">Click to scan devices in range</p>
+      </div>
+    </div>
+    <div class="col l3 m3">
+      <span
+        *ngIf="connected == true; else disconnectedBlock"
+        class="new badge green"
+        data-badge-caption="connected"
+      ></span>
+      <ng-template #disconnectedBlock
+        ><span class="new badge" data-badge-caption="disconnected"></span
+      ></ng-template>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="row">
+    <div class="col s12 m4">
+      <h5>Set Alert level</h5>
+      <form action="#">
+        <p *ngFor="let level of alertLevels; index as i">
+          <label>
+            <input
+              type="radio"
+              name="alertLevelGroup"
+              [disabled]="connected === false"
+              (click)="setAlert(i)"
+              [checked]="isCheckedAlert(i)"
+            />
+            <span>{{ level }}</span>
+          </label>
+        </p>
+      </form>
+    </div>
+    <div class="col s12 m8">
+      <h5>Distance Alarm</h5>
+      <div class="row">
+        <p class="col s3">Level:</p>
+        <p *ngFor="let level of alertLevels; index as i" class="col s12 m3">
+          <label>
+            <input
+              type="radio"
+              name="alertLevelGroup"
+              [disabled]="connected === false"
+              (click)="setLinkLoss(i)"
+              [checked]="isCheckedDistance(i)"
+            />
+            <span>{{ level }}</span>
+          </label>
+        </p>
+      </div>
+      <div class="row">
+        <div class="col s1">
+          <p class="caption">Close</p>
+        </div>
+        <div class="col s10">
+          <form action="#">
+            <p class="range-field">
+              <input type="range" id="test5" min="0" max="100" />
+            </p>
+          </form>
+        </div>
+        <div class="col s1">
+          <p class="caption">Far</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s12 m6">
+      <h5>
+        <i class="material-icons">battery_full</i>Battery Level: {{ battery }} %
+      </h5>
+    </div>
+  </div>
+</div>

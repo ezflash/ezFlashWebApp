@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="row">
+    <div class="s12">
+      <ngx-file-drop
+        dropZoneClassName="suota-drop-zone"
+        dropZoneLabel="Drop files here"
+        (onFileDrop)="dropped($event)"
+        (onFileOver)="fileOver($event)"
+        (onFileLeave)="fileLeave($event)"
+      >
+        <ng-template
+          ngx-file-drop-content-tmp
+          let-openFileSelector="openFileSelector"
+        >
+          <div fxLayout="column" class="drop-zone">
+            <div class="row">
+              <div class="col s12 center-align">
+                <i class="material-icons">cloud_upload</i>
+              </div>
+              <div class="col s12 center-align">
+                <span>Drag and drop application</span>
+              </div>
+              <div class="col s12 center-align">
+                <a
+                  class="waves-effect waves-light btn"
+                  (click)="openFileSelector()"
+                  >Select File</a
+                >
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-file-drop>
+    </div>
+  </div>
+  <div *ngIf="files.length">
+    <h2>File List</h2>
+    <ul class="collection" *ngIf="files.length">
+      <li class="collection-item" *ngFor="let thisfile of files; index as i">
+        <div class="row">
+          <div class="col s10">
+            {{ thisfile.fileEntry.name }}
+          </div>
+          <div class="col s1">
+            <a class="waves-effect waves-light btn" (click)="removeFile(i)"
+              ><i class="material-icons">cancel</i></a
+            >
+          </div>
+          <div class="col s1">
+            <a
+              class="waves-effect waves-light btn"
+              (click)="sendSelectedFiled(i)"
+              ><i class="material-icons">file_upload</i></a
+            >
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!--[ngClass]="{ 'disabled': files.length===0 } "  -->
+  <!-- <div class="s12 center-align ">
+        <a class="waves-effect waves-light btn " (click)="connectSuota() ">Scan device</a>
+    </div> -->
+</div>
