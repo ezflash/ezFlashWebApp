@@ -22,9 +22,8 @@ export class BooterComponent implements OnInit {
   constructor(private fetcher: FileFetcherService) {}
 
   ngOnInit(): void {
-    this.fetcher.getArrayFile('assets/uartboot.bin').subscribe((result) => {
+    this.fetcher.getArrayFile('assets/ezFlashStub.bin').subscribe((result) => {
       this.bootloader = new Uint8Array(result);
-      console.log('bootloader size', this.bootloader.length);
       this.bootloaderCRC = 0;
       for (let n of this.bootloader) {
         this.bootloaderCRC ^= n;
@@ -204,9 +203,5 @@ export class BooterComponent implements OnInit {
       this.port.close();
       console.log('Read loop got disconnected');
     }
-    // // Disconnected!
-    // this.connected = false;
-    // this.dispatchEvent(new Event("disconnect"));
-    // this.logger.debug("Finished read loop");
   }
 }

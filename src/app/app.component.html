@@ -1,37 +1,78 @@
 <nav>
-    <div class="nav-wrapper z-depth-5">
-        <!-- <a href="#" class="brand-logo">Logo</a> -->
-        <a href="/dsps" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a
+  <div class="nav-wrapper z-depth-5">
+    <!-- <a href="#" class="brand-logo">Logo</a> -->
+    <a href="/dsps" data-target="mobile-demo" class="sidenav-trigger"
+      ><i class="material-icons">menu</i></a
     >
-    <ul id="dropdown1" class="dropdown-content">
-      <li><a href="#!">one</a></li>
-        <li><a href="#!">two</a></li>
-        <li class="divider"></li>
-        <li><a href="#!">three</a></li>
-        </ul>
-        <ul id="nav-mobile" class="left hide-on-med-and-down">
-            <li>
-                <a routerLink="home"><i class="material-icons">home</i></a>
-            </li>
-            <li><a routerLink="suota">SUOTA</a></li>
-            <li><a routerLink="dsps">DSPS</a></li>
-            <li><a routerLink="booter">Booter</a></li>
-            <li><a routerLink="md">md</a></li>
-            <li>
-                <a class="dropdown-trigger" data-target="dropdown1">Dropdown<i class="material-icons right">arrow_drop_down</i></a
+    <ul id="nav-mobile" class="left hide-on-med-and-down">
+      <li>
+        <a routerLink="home"><i class="material-icons">home</i></a>
+      </li>
+      <li>
+        <a class="dropdown-trigger" data-target="deviceDropDown"
+          >Device<i class="material-icons right">arrow_drop_down</i></a
         >
       </li>
+
+      <li>
+        <a class="dropdown-trigger" data-target="BluetoothDropDown"
+          >Bluetooth<i class="material-icons right">arrow_drop_down</i></a
+        >
+      </li>
+      <li><a routerLink="examples">Examples</a></li>
     </ul>
-    <a routerLink="home" class="brand-logo right">ezFlash Web App</a>
-    </div>
+    <a routerLink="home" class="brand-logo right">ezFlashWebApp</a>
+
+    <ul id="deviceDropDown" class="dropdown-content">
+      <li><a routerLink="booter">Booter</a></li>
+      <li><a routerLink="flasher">Flasher</a></li>
+    </ul>
+    <ul id="BluetoothDropDown" class="dropdown-content">
+      <li><a routerLink="suota">SUOTA</a></li>
+      <li><a routerLink="prox">Proximity</a></li>
+      <li><a routerLink="dsps">DSPS</a></li>
+    </ul>
+  </div>
 </nav>
 <ul class="sidenav" id="mobile-demo">
+  <li>
+    <a routerLink="home">
+      <H5 class="center-align">ezFlashWebApp</H5>
+    </a>
+  </li>
+  <div class="divider"></div>
+  <div class="section">
     <li>
-        <a routerLink="home"><i class="material-icons">home</i> Home</a>
+      <H5 class="center-align">Device Management</H5>
     </li>
-    <li><a routerLink="suota">SUOTA</a></li>
-    <li><a routerLink="dsps">DSPS</a></li>
     <li><a routerLink="booter">Booter</a></li>
+    <li><a routerLink="flasher">Flasher</a></li>
+  </div>
+  <div class="divider"></div>
+  <li>
+    <H5 class="center-align">Bluetooth</H5>
+  </li>
+  <li><a routerLink="suota">SUOTA</a></li>
+  <li><a routerLink="prox">Proximity</a></li>
+  <li><a routerLink="dsps">DSPS</a></li>
+  <div class="divider"></div>
+  <H5 class="center-align">Application examples</H5>
 </ul>
-
-<router-outlet></router-outlet>
+<div *ngIf="navb && navs; else nointerfaceblock">
+  <router-outlet></router-outlet>
+</div>
+<ng-template #nointerfaceblock>
+  <div class="container">
+    <h5>Unsupported Navigator</h5>
+    <p>
+      This application relies on the navigator serial and bluetooth API to
+      access the Smartbond devices. The current navigator does not support those
+      functions.<br />
+      Please refer to
+      <a href="https://caniuse.com/web-bluetooth">this page</a> for
+      web-bluetooth support. Please refer to
+      <a href="https://caniuse.com/web-serial">this page</a> for web-serial
+      support.
+    </p>
+  </div>
+</ng-template>

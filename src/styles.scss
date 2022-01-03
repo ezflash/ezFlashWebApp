@@ -11,7 +11,7 @@ $primary-color-dark: false !default;
 }
 
 $secondary-color: color("red", "lighten-1") !default;
-$success-color: color("yellow", "base") !default;
+$success-color: color("green", "base") !default;
 $error-color: color("red", "base") !default;
 $link-color: color("light-blue", "darken-1") !default;
 @import "../node_modules/materialize-css/sass/materialize.scss";
@@ -59,4 +59,11 @@ main {
 
 .suota-drop-zone__file-input {
   display: none;
+}
+
+.success-class {
+  color: $success-color;
+}
+.error-class {
+  color: $error-color;
 }

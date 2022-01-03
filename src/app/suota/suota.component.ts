@@ -69,7 +69,6 @@ export class SuotaComponent implements OnInit {
   ngOnInit(): void {}
 
   async executeSuota(inputFile: File) {
-    // let reader = new FileReader();
     this.inputFile = inputFile;
 
     let reader = new FileReader();
@@ -83,12 +82,73 @@ export class SuotaComponent implements OnInit {
   }
 
   public log(msg: string): void {
+    //console.log(msg);
     this.message = msg;
   }
 
   async connectSuota() {
-    this.position = 0;
     let device: BluetoothDevice;
+
+    let statusHandler = async (event: Event) => {
+      // Data was received from BLE peer
+      let t = event.target as any;
+      let v = t.value as any;
+      let x = v.getUint8(0);
+
+      if (x == 0x02) {
+        if (this.position < this.fileData.length) {
+          this.log('acK received');
+          this.upload_image();
+        } else if (!this.done) {
+          // Uploading complete
+          this.done = true;
+          // Verify that image was complely received by checking the peer byte count
+          this.log('Image was transferred - Verifying...');
+          this.log('write FINAL_CMD');
+          // Finalize
+          await this.spotar_mem_dev.writeValue(new Uint8Array(this.FINAL_CMD));
+
+          // stop notification
+          await this.spotar_serv_status.startNotifications();
+
+          this.log('write reboot');
+          // Reset the peer device
+          try {
+            await this.spotar_mem_dev.writeValue(
+              new Uint8Array(this.RESET_CMD)
+            );
+          } catch (err) {}
+
+          this.log('Update Completed.');
+          this.log(
+            'Update time: ' + (Date.now() - this.time_start) / 1000 + 's'
+          );
+        }
+      }
+      // Error messages
+      else if (x == 0x07)
+        this.log(
+          'Internal Memory Error. Not enough internal memory space for patch!'
+        );
+      else if (x == 0x08) this.log('Invalid memory device!');
+      else if (x == 0x09) this.log('Application error!');
+      else if (x == 0x11) this.log('Invalid image bank!');
+      else if (x == 0x12) this.log('Invalid image header!');
+      else if (x == 0x13) this.log('Invalid image size!');
+      else if (x == 0x14) this.log('Invalid product header!');
+      else if (x == 0x15) this.log('Same image error!');
+      else if (x == 0x16)
+        this.log('Failed to read from external memory device!');
+    };
+
+    let disconnectHandler = () => {
+      this.spotar_serv_status.removeEventListener(
+        'characteristicvaluechanged',
+        statusHandler
+      );
+      device.removeEventListener('gattserverdisconnected', disconnectHandler);
+      this.log('Disconnected');
+    };
 
     // Set BLE scan filters
     let options = {
@@ -96,22 +156,22 @@ export class SuotaComponent implements OnInit {
       optionalServices: [this.SPOTAR_SERVICE],
     };
 
+    this.done = false;
+    this.position = 0;
+    this.progress = '0%';
+
     // Try to connect to a BLE device
     try {
       this.log('Requesting Bluetooth Device...');
 
       device = await navigator.bluetooth.requestDevice(options);
 
-      this.progress = '0%';
-
       let elem = document.querySelectorAll('#modal1');
       let instance = M.Modal.getInstance(elem[0]);
       instance.open();
       this.time_start = Date.now();
 
-      device.addEventListener('gattserverdisconnected', () => {
-        this.log('Disconnected');
-      });
+      device.addEventListener('gattserverdisconnected', disconnectHandler);
 
       this.log('Connected to' + device.name);
 
@@ -132,55 +192,7 @@ export class SuotaComponent implements OnInit {
       await this.spotar_serv_status.startNotifications();
       this.spotar_serv_status.addEventListener(
         'characteristicvaluechanged',
-        async (event: Event) => {
-          // Data was received from BLE peer
-          let t = event.target as any;
-          let v = t.value as any;
-          let x = v.getUint8(0);
-
-          if (x == 0x02) {
-            if (this.position < this.fileData.length) {
-              this.upload_image();
-            } else if (!this.done) {
-              // Uploading complete
-              this.done = true;
-              // Verify that image was complely received by checking the peer byte count
-              this.log('Image was transferred - Verifying...');
-              this.log('write FINAL_CMD');
-              // Finalize
-              await this.spotar_mem_dev.writeValue(
-                new Uint8Array(this.FINAL_CMD)
-              );
-
-              this.log('write reboot');
-              // Reset the peer device
-              try {
-                await this.spotar_mem_dev.writeValue(
-                  new Uint8Array(this.RESET_CMD)
-                );
-              } catch (err) {}
-
-              this.log('Update Completed.');
-              this.log(
-                'Update time: ' + (Date.now() - this.time_start) / 1000 + 's'
-              );
-            }
-          }
-          // Error messages
-          else if (x == 0x07)
-            this.log(
-              'Internal Memory Error. Not enough internal memory space for patch!'
-            );
-          else if (x == 0x08) this.log('Invalid memory device!');
-          else if (x == 0x09) this.log('Application error!');
-          else if (x == 0x11) this.log('Invalid image bank!');
-          else if (x == 0x12) this.log('Invalid image header!');
-          else if (x == 0x13) this.log('Invalid image size!');
-          else if (x == 0x14) this.log('Invalid product header!');
-          else if (x == 0x15) this.log('Same image error!');
-          else if (x == 0x16)
-            this.log('Failed to read from external memory device!');
-        }
+        statusHandler
       );
 
       this.log(' Getting SPOTA_MEM_DEV Characteristic...');
@@ -234,6 +246,10 @@ export class SuotaComponent implements OnInit {
       this.upload_image();
     } catch (error) {
       this.log('Failed: ' + error);
+      // try to disconnect
+      if (this.server.connected === true) {
+        this.server.disconnect();
+      }
     }
   }
 
@@ -276,31 +292,5 @@ export class SuotaComponent implements OnInit {
       this.progress =
         ((this.position / this.fileData.length) * 100).toString(10) + '%';
     }
-  }
-
-  makeCRCTable() {
-    // Construct a table for CRC
-    var c;
-    var crcTable = [];
-    for (var n = 0; n < 256; n++) {
-      c = n;
-      for (var k = 0; k < 8; k++) {
-        c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-      }
-      crcTable[n] = c;
-    }
-    return crcTable;
-  }
-
-  crc32(str: string) {
-    // Calculate CRC of a string of char
-    var crcTable = this.makeCRCTable();
-    var crc = 0 ^ -1;
-
-    for (var i = 0; i < str.length; i++) {
-      crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xff];
-    }
-
-    return (crc ^ -1) >>> 0;
   }
 }

@@ -32,7 +32,7 @@ export class SuotaHomeComponent implements OnInit {
 
   async sendSelectedFiled(index: number) {
     if (this.files[index].fileEntry.isFile) {
-      const fileEntry = this.files[0].fileEntry as FileSystemFileEntry;
+      const fileEntry = this.files[index].fileEntry as FileSystemFileEntry;
 
       fileEntry.file((file: File) => {
         this.selectedFile.emit(file);

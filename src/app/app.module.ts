@@ -20,6 +20,10 @@ import { MarkdownViewerComponent } from './markdown-viewer/markdown-viewer.compo
 import { MarkdownModule } from 'ngx-markdown';
 import { HomeComponent } from './home/home.component';
 import { ProximityComponent } from './proximity/proximity.component';
+import { ExampleManagerComponent } from './example-manager/example-manager.component';
+import { ExampleHomeComponent } from './example-manager/example-home/example-home.component';
+import { ExampleViewerComponent } from './example-manager/example-viewer/example-viewer.component';
+import { FlasherComponent } from './flasher/flasher.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,6 +36,10 @@ import { ProximityComponent } from './proximity/proximity.component';
     MarkdownViewerComponent,
     HomeComponent,
     ProximityComponent,
+    ExampleManagerComponent,
+    ExampleHomeComponent,
+    ExampleViewerComponent,
+    FlasherComponent,
   ],
   imports: [
     BrowserModule,

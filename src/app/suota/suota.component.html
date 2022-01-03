@@ -1,25 +1,27 @@
 <h1 class="center-align">Software Update Over The Air</h1>
 <div class="container">
-    <div class="section">
-        <p class="caption">
-            Performs Software Update Over The Air. Select your files, and click upload. The remote device selector will pop-up and starts to transfer the new application to the device. It requires the device to expose the Dialog SUOTA service id (0xFEF5) in the advertising
-            data.
-        </p>
-    </div>
+  <div class="section">
+    <p class="caption">
+      Performs Software Update Over The Air. Select your files, and click
+      upload. The remote device selector will pop-up and starts to transfer the
+      new application to the device. It requires the device to expose the Dialog
+      SUOTA service id (0xFEF5) in the advertising data.
+    </p>
+  </div>
 </div>
 <div id="modal1" class="modal">
-    <div class="modal-content" *ngIf="inputFile">
-        <h4>SUOTA transfer</h4>
-        <p *ngIf="server">
-            Transfering {{ inputFile.name }} to {{ server.device.name }}
-        </p>
-        <div class="progress">
-            <div class="determinate" [style.width]="progress"></div>
-        </div>
-        <p>{{ message }}</p>
+  <div class="modal-content" *ngIf="inputFile">
+    <h4>SUOTA transfer</h4>
+    <p *ngIf="server">
+      Transfering {{ inputFile.name }} to {{ server.device.name }}
+    </p>
+    <div class="progress">
+      <div class="determinate" [style.width]="progress"></div>
     </div>
-    <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">Close</a>
-    </div>
+    <p>{{ message }}</p>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
 </div>
 <app-suota-home (selectedFile)="executeSuota($event)"></app-suota-home>
