@@ -40,41 +40,44 @@
             </div>
           </div>
         </div>
-        <div *ngIf="syncstate === 'synced' || syncstate === 'booted'">
+        <div *ngIf="syncstate === 'synced'">
           <i class="material-icons success-class">check_box</i>
         </div>
         <div *ngIf="syncstate === 'unsynced'">
           <i class="material-icons error-class">error</i>
         </div>
       </div>
-      <div class="col s11">
-        <span>Loading code stub</span>
-      </div>
-      <div class="col s1">
-        <div
-          class="preloader-wrapper small active"
-          *ngIf="syncstate === 'synced'"
-        >
-          <div class="spinner-layer spinner-green-only">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-              <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle"></div>
+      <div *ngIf="syncstate === 'synced'">
+        <div class="col s11">
+          <span>Loading code stub</span>
+        </div>
+        <div class="col s1">
+          <div
+            class="preloader-wrapper small active"
+            *ngIf="bootstate === 'loading'"
+          >
+            <div class="spinner-layer spinner-green-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div *ngIf="syncstate === 'booted'">
-          <i class="material-icons success-class">check_box</i>
-        </div>
-        <div *ngIf="syncstate === 'booterror'">
-          <i class="material-icons">error</i>
+          <div *ngIf="bootstate === 'booted'">
+            <i class="material-icons success-class">check_box</i>
+          </div>
+          <div *ngIf="bootstate === 'booterror'">
+            <i class="material-icons error-class">error</i>
+          </div>
         </div>
       </div>
-      <div *ngIf="flashingState === 'progress'">
+
+      <div *ngIf="bootstate === 'booted' && flashingState !== 'flashDone'">
         <div class="col s4">
           <span>Writing flash</span>
         </div>
@@ -84,15 +87,17 @@
           </div>
         </div>
       </div>
-      <div *ngIf="flashingState === 'flashDone' || flashingState === 'flasherror'">
+      <div
+        *ngIf="flashingState === 'flashDone' || flashingState === 'flasherror'"
+      >
         <div class="col s11">
           <span>Programming completed</span>
         </div>
-        <div class="col s1"  *ngIf="flashingState === 'flashDone'">
+        <div class="col s1" *ngIf="flashingState === 'flashDone'">
           <i class="material-icons success-class">check_box</i>
         </div>
         <div *ngIf="flashingState === 'flasherror'">
-          <i class="material-icons">error</i>
+          <i class="material-icons error-class">error</i>
         </div>
       </div>
       <div class="modal-footer">

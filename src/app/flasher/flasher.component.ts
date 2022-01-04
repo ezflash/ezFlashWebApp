@@ -26,6 +26,7 @@ export class FlasherComponent implements OnInit {
 
   portstate: string;
   syncstate: string;
+  bootstate: string;
   flashingState: string;
 
   flashProgress: string = '0%';
@@ -58,12 +59,10 @@ export class FlasherComponent implements OnInit {
   }
 
   async writeFlash() {
-    console.log('Starting flash process');
     this.boot();
   }
 
   async disconnect() {
-    console.log('Disconnect');
     if (this._reader) {
       try {
         await this._reader.cancel();
@@ -81,9 +80,8 @@ export class FlasherComponent implements OnInit {
   async boot() {
     let sync: Boolean;
     let packet: number[] | null = [];
+    let curstate: string;
 
-    this.syncstate = 'syncing';
-    this.flashingState = 'idle';
     this.__inputBuffer.length = 0;
     this.flashProgress = '0%';
 
@@ -111,9 +109,8 @@ export class FlasherComponent implements OnInit {
 
     if (!this.port) {
       return;
-    } else {
-      console.log(this.port);
     }
+
     try {
       await this.port.open({ baudRate: 115200 });
     } catch (err: any) {
@@ -122,41 +119,59 @@ export class FlasherComponent implements OnInit {
     }
 
     this.syncstate = 'syncing';
+    this.flashingState = 'idle';
+    this.bootstate = 'idle';
 
     let elem = document.querySelectorAll('#flasherModal');
     let instance = M.Modal.getInstance(elem[0]);
     instance.open();
 
     this.readLoop();
-    this.syncstate = await this.smartbondSync();
-    console.log("initial sync state " +this.syncstate);
+    curstate = await this.smartbondSync();
 
-    if (this.syncstate === 'synced') {
+    if (curstate === 'synced') {
+      this.syncstate = curstate;
+      this.bootstate = 'loading';
       packet.push(1);
       packet.push(this.bootloader.length & 0xff);
       packet.push((this.bootloader.length >> 8) & 0xff);
       await this.writeToStream(packet);
-    } else if (this.syncstate === 'booted') {
+    } else if (curstate === 'booted') {
+      this.syncstate = 'synced';
+      this.bootstate = curstate;
     } else {
+      this.syncstate = curstate;
       this.disconnect();
       return;
     }
-    if (this.syncstate === 'synced') {
+
+    if (this.syncstate === 'synced' && this.bootstate !== 'booted') {
       if (await this.ack()) {
         this.writeToStream(Array.from(this.bootloader));
       } else {
         return;
       }
       let crc = await this.crc();
-      if (crc === this.bootloaderCRC) {
+      if (crc === false) {
+        this.bootstate = 'booterror';
+        console.log('Failed to get the crc after loading stub');
+      } else if (crc === this.bootloaderCRC) {
         await this.writeToStream([6]);
       } else {
-        this.syncstate = 'booterror';
-        console.log('crc mismatch', crc, this.bootloaderCRC);
+        this.bootstate = 'booterror';
+        console.log('Eror: crc mismatch', crc, this.bootloaderCRC);
       }
     }
 
-    this.syncstate = await this.smartbondSync();
+    curstate = await this.smartbondSync();
+
+    if (curstate === 'booted') {
+      this.bootstate = curstate;
+    } else {
+      this.bootstate = 'booterror';
+      return;
+    }
+
     this.__inputBuffer.length = 0;
 
     // Send flash command
@@ -170,10 +185,6 @@ export class FlasherComponent implements OnInit {
     this.flashingState = 'progress';
 
     while (remaining && retryCount <= this.RETRYNUMBER) {
-      console.log(
-        'burn status: remaining: ' + remaining + ', retry: ' + retryCount
-      );
-
       thischunk = Math.min(remaining, chunkSize);
       packet.length = 0;
       await this.writeToStream([
@@ -184,9 +195,8 @@ export class FlasherComponent implements OnInit {
       ]);
 
       if (!(await this.ack())) {
-        console.error('failed to get ack');
-        this.flashingState = "flasherror";
-        break
+        this.flashingState = 'flasherror';
+        break;
       }
 
       let chunk = new Uint8Array(thischunk + 5);
@@ -218,20 +228,20 @@ export class FlasherComponent implements OnInit {
       }
       let devcrc = await this.getFlashCrc();
 
-      console.log(crc16, devcrc);
-
-      if (!(crc16 === devcrc)) {
+      if (devcrc === false) {
+      } else if (!(crc16 === devcrc)) {
         retryCount += 1;
-        console.error('crc error');
         await this.writeToStream([0x15]);
         if (!(await this.nack())) {
-          console.error('failed to get ack');
+          this.flashingState = 'flasherror';
+          return;
         }
       } else {
         await this.writeToStream([6]);
 
         if (!(await this.ack())) {
-          console.error('failed to get ack');
+          this.flashingState = 'flasherror';
+          return;
         }
 
         address += thischunk;
@@ -239,10 +249,8 @@ export class FlasherComponent implements OnInit {
         remaining -= thischunk;
         this.flashProgress =
           Math.round(
-            ((this.fileData.length - remaining) / this.fileData.length) *
-            100
+            ((this.fileData.length - remaining) / this.fileData.length) * 100
           ).toString(10) + '%';
-        console.log("fp " + this.flashProgress);
       }
 
       if (remaining == 0) {
@@ -251,18 +259,16 @@ export class FlasherComponent implements OnInit {
     }
   }
 
-  async getFlashCrc(): Promise<number> {
+  async getFlashCrc(): Promise<number | boolean> {
     for (let i = 0; i < 500; i++) {
       if (this.__inputBuffer.length >= 3 && this.__inputBuffer[0]) {
         let crc = this.__inputBuffer[1] | (this.__inputBuffer[2] << 8);
-        console.log('return crc ' + this.__inputBuffer + ' data ' + crc);
         this.__inputBuffer.length = 0;
         return crc;
       }
       await sleep(10);
     }
-    console.log(this.__inputBuffer);
-    throw new Error("Couldn't get crcflash  from Smartbond. Try resetting.");
+    return false;
   }
 
   /**
@@ -296,11 +302,10 @@ export class FlasherComponent implements OnInit {
       if (this.__inputBuffer.length > 0) {
         return this.__inputBuffer[0];
       }
-      console.log('wait crc');
       await sleep(10);
     }
-    console.log(this.__inputBuffer);
-    throw new Error("Couldn't get flash write crc from Smartbond");
+
+    return false;
   }
 
   /**
@@ -319,8 +324,7 @@ export class FlasherComponent implements OnInit {
 
       await sleep(10);
     }
-    console.log(this.__inputBuffer);
-    throw new Error("Couldn't get ack from Smartbond. Try resetting.");
+    return false;
   }
   async nack() {
     for (let i = 0; i < 5; i++) {
@@ -333,8 +337,7 @@ export class FlasherComponent implements OnInit {
 
       await sleep(10);
     }
-    console.log(this.__inputBuffer);
-    throw new Error("Couldn't get ack from Smartbond. Try resetting.");
+    return false;
   }
 
   async writeToStream(data: number[] | Uint8Array) {
@@ -352,8 +355,6 @@ export class FlasherComponent implements OnInit {
    * Reads data from the input stream and places it in the inputBuffer
    */
   async readLoop() {
-    console.log('Starting read loop');
-
     this._reader = this.port.readable!.getReader();
 
     try {
