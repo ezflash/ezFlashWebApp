@@ -122,9 +122,9 @@ export class FlasherComponent implements OnInit {
     this.flashingState = 'idle';
     this.bootstate = 'idle';
 
-    let elem = document.querySelectorAll('#flasherModal');
-    let instance = M.Modal.getInstance(elem[0]);
-    instance.open();
+    let elem = document.querySelectorAll('#flasherModal') as any;
+    // let instance = M.Modal.getInstance(elem[0]);
+    elem[0].M_Modal.open();
 
     this.readLoop();
     curstate = await this.smartbondSync();

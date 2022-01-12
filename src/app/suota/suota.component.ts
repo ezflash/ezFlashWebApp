@@ -166,9 +166,8 @@ export class SuotaComponent implements OnInit {
 
       device = await navigator.bluetooth.requestDevice(options);
 
-      let elem = document.querySelectorAll('#modal1');
-      let instance = M.Modal.getInstance(elem[0]);
-      instance.open();
+      let elem = document.querySelectorAll('#modal1') as any;
+      elem[0].M_Modal.open();
       this.time_start = Date.now();
 
       device.addEventListener('gattserverdisconnected', disconnectHandler);
