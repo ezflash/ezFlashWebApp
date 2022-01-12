@@ -161,11 +161,13 @@ export class SuotaComponent implements OnInit {
     this.progress = '0%';
 
     // Try to connect to a BLE device
-    try {
       this.log('Requesting Bluetooth Device...');
 
-      device = await navigator.bluetooth.requestDevice(options);
-
+      try {
+        device = await navigator.bluetooth.requestDevice(options);
+      } catch (error) {
+        return;
+      }
       let elem = document.querySelectorAll('#modal1') as any;
       elem[0].M_Modal.open();
       this.time_start = Date.now();
@@ -243,13 +245,6 @@ export class SuotaComponent implements OnInit {
       this.log('Ready to communicate.');
 
       this.upload_image();
-    } catch (error) {
-      this.log('Failed: ' + error);
-      // try to disconnect
-      if (this.server.connected === true) {
-        this.server.disconnect();
-      }
-    }
   }
 
   async upload_image() {
