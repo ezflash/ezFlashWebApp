@@ -32,6 +32,10 @@ export class FlasherComponent implements OnInit {
   flashProgress: string = '0%';
 
   ngOnInit(): void {
+
+    let elem = document.querySelectorAll('#flasherModal') as any;
+    let instances = M.Modal.init(elem, {});
+
     this.fetcher.getArrayFile('assets/ezFlashStub.bin').subscribe((result) => {
       this.bootloader = new Uint8Array(result);
       this.bootloaderCRC = 0;

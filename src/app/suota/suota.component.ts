@@ -66,7 +66,11 @@ export class SuotaComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    let elem = document.querySelectorAll('#suotamodal') as any;
+    let instances = M.Modal.init(elem, {});
+
+  }
 
   async executeSuota(inputFile: File) {
     this.inputFile = inputFile;
@@ -168,7 +172,7 @@ export class SuotaComponent implements OnInit {
       } catch (error) {
         return;
       }
-      let elem = document.querySelectorAll('#modal1') as any;
+      let elem = document.querySelectorAll('#suotamodal') as any;
       elem[0].M_Modal.open();
       this.time_start = Date.now();
 
