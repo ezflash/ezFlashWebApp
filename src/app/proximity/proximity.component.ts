@@ -165,20 +165,32 @@ export class ProximityComponent implements OnInit {
       if(dis_service ) {
 
         let decoder = new TextDecoder("utf-8");
-        let dis_char : BluetoothRemoteGATTCharacteristic = await dis_service.getCharacteristic(this.MODEL_NUMBER_UUID);
-        this.model = decoder.decode(await dis_char.readValue());
+        let dis_char : BluetoothRemoteGATTCharacteristic;
 
-        dis_char = await dis_service.getCharacteristic(this.FIRMWARE_REV_UUID);
-        this.fw_rev = decoder.decode(await dis_char.readValue());
-
-        dis_char = await dis_service.getCharacteristic(this.HW_REV_UUID);
-        this.hw_rev = decoder.decode(await dis_char.readValue());
-
-        dis_char = await dis_service.getCharacteristic(this.SW_REV_UUID);
-        this.sw_rev = decoder.decode(await dis_char.readValue());
-
-        dis_char = await dis_service.getCharacteristic(this.MNF_REV_UUID);
-        this.manufacturer = decoder.decode(await dis_char.readValue());
+        try {
+          dis_char = await dis_service.getCharacteristic(this.MODEL_NUMBER_UUID);
+          this.model = decoder.decode(await dis_char.readValue());
+        } catch (error) {}
+        
+        try {
+          dis_char = await dis_service.getCharacteristic(this.FIRMWARE_REV_UUID);
+          this.fw_rev = decoder.decode(await dis_char.readValue());
+        } catch (error) {}
+        
+        try {
+          dis_char = await dis_service.getCharacteristic(this.HW_REV_UUID);
+          this.hw_rev = decoder.decode(await dis_char.readValue());
+        } catch (error) {}
+        
+        try {
+          dis_char = await dis_service.getCharacteristic(this.SW_REV_UUID);
+          this.sw_rev = decoder.decode(await dis_char.readValue());
+        } catch (error) {}
+        
+        try {
+          dis_char = await dis_service.getCharacteristic(this.MNF_REV_UUID);
+          this.manufacturer = decoder.decode(await dis_char.readValue());
+        } catch (error) {}
 
         this.dis = true;
 
