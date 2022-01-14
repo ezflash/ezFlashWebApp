@@ -23,10 +23,26 @@ export class ProximityComponent implements OnInit {
   BAS_SERVICE_UUID: number = 0x180f;
   BAS_LEVEL_UUID: number = 0x2a19;
 
+  DIS_SERVICE_UUID: number = 0x180A;
+  MODEL_NUMBER_UUID: number = 0x2a24;
+  FIRMWARE_REV_UUID: number = 0x2a26;
+  HW_REV_UUID: number = 0x2a27;
+  SW_REV_UUID: number = 0x2a28;
+  MNF_REV_UUID: number = 0x2a29;
+
   alertLevels: String[] = ['Off', 'Mild', 'High'];
   alertLevel: number = 0;
   distanceLevel: number = 0;
   battery: string = '--';
+  manufacturer : string;
+  model : string;
+  fw_rev: string;
+  hw_rev: string;
+  sw_rev: string;
+
+
+  dis: boolean = false;
+  bas: boolean = false;
 
   constructor() {}
 
@@ -68,6 +84,7 @@ export class ProximityComponent implements OnInit {
         this.IAS_SERVICE_UUID,
         this.LLS_SERVICE_UUID,
         this.BAS_SERVICE_UUID,
+        this.DIS_SERVICE_UUID,
       ],
     };
 
@@ -84,6 +101,10 @@ export class ProximityComponent implements OnInit {
       this.device = await navigator.bluetooth.requestDevice(options);
 
       this.device.addEventListener('gattserverdisconnected', () => {
+        this.connected = false;
+        this.battery = '--';
+        this.dis = false;
+        this.bas = false;
         this.log('Disconnected');
       });
 
@@ -117,22 +138,52 @@ export class ProximityComponent implements OnInit {
       const bas_service = await this.server.getPrimaryService(
         this.BAS_SERVICE_UUID
       );
+      if(bas_service ) {
+        this.bas = true;
+        this.log(' Getting BAS Characteristic...');
+        this.bas_level = await bas_service.getCharacteristic(this.BAS_LEVEL_UUID);
+  
+        let lvl = await this.bas_level.readValue();
+        this.battery = lvl.getUint8(0).toString();
+        await this.bas_level.startNotifications();
+        this.bas_level.addEventListener(
+          'characteristicvaluechanged',
+          async (event: Event) => {
+            let t = event.target as any;
+            let v = t.value as any;
+            let x = v.getUint8(0);
+            this.battery = x.toString();
+          }
+        );
+      }
 
-      this.log(' Getting BAS Characteristic...');
-      this.bas_level = await bas_service.getCharacteristic(this.BAS_LEVEL_UUID);
-
-      let lvl = await this.bas_level.readValue();
-      this.battery = lvl.getUint8(0).toString();
-      await this.bas_level.startNotifications();
-      this.bas_level.addEventListener(
-        'characteristicvaluechanged',
-        async (event: Event) => {
-          let t = event.target as any;
-          let v = t.value as any;
-          let x = v.getUint8(0);
-          this.battery = x.toString();
-        }
+      this.log('Mapping DIS Service...');
+      const dis_service = await this.server.getPrimaryService(
+        this.DIS_SERVICE_UUID
       );
+      
+      if(dis_service ) {
+
+        let decoder = new TextDecoder("utf-8");
+        let dis_char : BluetoothRemoteGATTCharacteristic = await dis_service.getCharacteristic(this.MODEL_NUMBER_UUID);
+        this.model = decoder.decode(await dis_char.readValue());
+
+        dis_char = await dis_service.getCharacteristic(this.FIRMWARE_REV_UUID);
+        this.fw_rev = decoder.decode(await dis_char.readValue());
+
+        dis_char = await dis_service.getCharacteristic(this.HW_REV_UUID);
+        this.hw_rev = decoder.decode(await dis_char.readValue());
+
+        dis_char = await dis_service.getCharacteristic(this.SW_REV_UUID);
+        this.sw_rev = decoder.decode(await dis_char.readValue());
+
+        dis_char = await dis_service.getCharacteristic(this.MNF_REV_UUID);
+        this.manufacturer = decoder.decode(await dis_char.readValue());
+
+        this.dis = true;
+
+      }
+
     } catch (error) {
       this.log('connection failed ' + error);
     }
