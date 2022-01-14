@@ -72,6 +72,11 @@ export class SuotaComponent implements OnInit {
 
   }
 
+  saveSelectedProduct(event: Event) {
+
+    console.log(event);
+  }
+
   async executeSuota(inputFile: File) {
     this.inputFile = inputFile;
 
