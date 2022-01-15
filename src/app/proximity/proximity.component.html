@@ -57,11 +57,11 @@
         <p *ngFor="let level of alertLevels; index as i" class="col s12 m3">
           <label>
             <input
-            type="radio"
-            name="alertLevelGroup"
-            [disabled]="connected === false"
-            (click)="setLinkLoss(i)"
-            [checked]="isCheckedDistance(i)"
+              type="radio"
+              name="alertLevelGroup"
+              [disabled]="connected === false"
+              (click)="setLinkLoss(i)"
+              [checked]="isCheckedDistance(i)"
             />
             <span>{{ level }}</span>
           </label>

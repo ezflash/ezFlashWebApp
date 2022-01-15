@@ -1,5 +1,8 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { product,SupportedProductsService } from '../supported-products.service';
+import {
+  product,
+  SupportedProductsService,
+} from '../supported-products.service';
 
 @Component({
   selector: 'app-product-selector',
@@ -9,7 +12,7 @@ import { product,SupportedProductsService } from '../supported-products.service'
 export class ProductSelectorComponent implements OnInit {
   @Output() selectedProduct = new EventEmitter<product>();
 
-  productList : product[];
+  productList: product[];
 
   constructor(private pl: SupportedProductsService) {}
 
@@ -18,7 +21,7 @@ export class ProductSelectorComponent implements OnInit {
     this.selectedProduct.emit(this.productList[0]);
   }
 
-  selectProduct(index: number) : void {
+  selectProduct(index: number): void {
     this.selectedProduct.emit(this.productList[index]);
   }
 }

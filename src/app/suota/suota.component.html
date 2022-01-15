@@ -1,4 +1,6 @@
-<app-product-selector (selectedProduct)="saveSelectedProduct($event)"></app-product-selector>
+<app-product-selector
+  (selectedProduct)="saveSelectedProduct($event)"
+></app-product-selector>
 <h1 class="center-align">Software Update Over The Air</h1>
 <div class="container">
   <div class="section">
@@ -15,7 +17,8 @@
   <div class="modal-content" *ngIf="inputFile">
     <h4>SUOTA transfer</h4>
     <p *ngIf="server">
-      Transfering {{ inputFile.name }} to {{ server.device.name }}
+      [{{ detectedProduct.prettyName }}] Transfering {{ inputFile.name }} to
+      {{ server.device.name }}
     </p>
     <div class="progress">
       <div class="determinate" [style.width]="progress"></div>

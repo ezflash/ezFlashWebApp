@@ -32,7 +32,6 @@ export class FlasherComponent implements OnInit {
   flashProgress: string = '0%';
 
   ngOnInit(): void {
-
     let elem = document.querySelectorAll('#flasherModal') as any;
     let instances = M.Modal.init(elem, {});
 

@@ -1,10 +1,10 @@
 <div class="row">
-    <div class="divider"></div>
-    <div class="col s12">
-      <ul class="tabs">
-        <li *ngFor="let item of productList; index as i" class="tab col s4">
-            <a (click)="selectProduct(i)">{{item.prettyName}}</a>
-        </li>
-      </ul>
-    </div>
+  <div class="divider"></div>
+  <div class="col s12">
+    <ul class="tabs">
+      <li *ngFor="let item of productList; index as i" class="tab col s4">
+        <a (click)="selectProduct(i)">{{ item.prettyName }}</a>
+      </li>
+    </ul>
   </div>
+</div>

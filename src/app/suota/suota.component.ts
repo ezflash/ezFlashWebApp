@@ -85,20 +85,29 @@ export class SuotaComponent implements OnInit {
     this.selectectedProduct = event;
   }
 
+  async readFileAsync(file: File): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result as ArrayBuffer);
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
   async executeSuota(inputFile: File) {
     this.inputFile = inputFile;
-
-    let reader = new FileReader();
-
-    reader.onload = (e) => {
-      this.fileData = new Uint8Array(reader.result as ArrayBuffer);
-    };
-    reader.readAsArrayBuffer(this.inputFile);
+    // wait to get the file read
+    this.fileData = new Uint8Array(await this.readFileAsync(inputFile));
 
     // detect the product image type
     try {
       this.detectedProduct = this.sp.getProductByImageMagic(
-        this.inputFile.slice(0, 2)
+        this.fileData.slice(0, 2)
       );
     } catch (e) {
       this.errorMessage =
@@ -106,6 +115,14 @@ export class SuotaComponent implements OnInit {
       let elem = document.querySelectorAll('#suotaerrormodal') as any;
       elem[0].M_Modal.open();
       return;
+    }
+
+    if (this.selectectedProduct.name == 'DA14531') {
+      // Calculate 8bit checksum and append it to the image
+      // let chksum = 0;
+      // for(let i=0; i<this.fileData.length; i++)
+      //   chksum = 0xFF & (chksum ^ this.fileData[i]);
+      // this.fileData.appendBytes(chksm);
     }
 
     this.connectSuota();
@@ -169,6 +186,7 @@ export class SuotaComponent implements OnInit {
       else if (x == 0x15) this.log('Same image error!');
       else if (x == 0x16)
         this.log('Failed to read from external memory device!');
+      else this.log('Unknown message ' + x);
     };
 
     let disconnectHandler = () => {
@@ -275,6 +293,11 @@ export class SuotaComponent implements OnInit {
     );
 
     this.log('Ready to communicate.');
+
+    if (this.selectectedProduct.name == 'DA14530') {
+      this.log('Write the GPIO map');
+      await this.spotar_gpiomap.writeValue(new Uint8Array([0, 3, 5, 6]));
+    }
 
     this.upload_image();
   }

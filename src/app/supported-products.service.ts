@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 export interface product {
   name: string;
   prettyName: string;
-  imageHeaderMagic?: number[]
+  imageHeaderMagic?: number[];
 }
 
 @Injectable({
@@ -14,16 +14,16 @@ export class SupportedProductsService {
     {
       name: 'DA1469X',
       prettyName: 'DA1469X',
-      imageHeaderMagic: [0x51,71],
-    },
-    {
-      name: 'DA14585',
-      prettyName: 'DA14585/DA14586',
+      imageHeaderMagic: [0x51, 0x71],
     },
     {
       name: 'DA14531',
       prettyName: 'DA14530/DA14531',
-      imageHeaderMagic: [0x70,51],
+      imageHeaderMagic: [0x70, 0x51],
+    },
+    {
+      name: 'DA14585',
+      prettyName: 'DA14585/DA14586',
     },
   ];
 
@@ -42,10 +42,12 @@ export class SupportedProductsService {
     throw 'Product not found';
   }
 
-  getProductByImageMagic(magic: Blob): product {
-
+  getProductByImageMagic(magic: Uint8Array): product {
     for (let p of this.productList) {
-      if ((p.imageHeaderMagic[0] == magic[0]) && (p.imageHeaderMagic[1] == magic[1])) {
+      if (
+        p.imageHeaderMagic[0] == magic[0] &&
+        p.imageHeaderMagic[1] == magic[1]
+      ) {
         return p;
       }
     }

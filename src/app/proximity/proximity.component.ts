@@ -23,7 +23,7 @@ export class ProximityComponent implements OnInit {
   BAS_SERVICE_UUID: number = 0x180f;
   BAS_LEVEL_UUID: number = 0x2a19;
 
-  DIS_SERVICE_UUID: number = 0x180A;
+  DIS_SERVICE_UUID: number = 0x180a;
   MODEL_NUMBER_UUID: number = 0x2a24;
   FIRMWARE_REV_UUID: number = 0x2a26;
   HW_REV_UUID: number = 0x2a27;
@@ -34,12 +34,11 @@ export class ProximityComponent implements OnInit {
   alertLevel: number = 0;
   distanceLevel: number = 0;
   battery: string = '--';
-  manufacturer : string;
-  model : string;
+  manufacturer: string;
+  model: string;
   fw_rev: string;
   hw_rev: string;
   sw_rev: string;
-
 
   dis: boolean = false;
   bas: boolean = false;
@@ -138,11 +137,13 @@ export class ProximityComponent implements OnInit {
       const bas_service = await this.server.getPrimaryService(
         this.BAS_SERVICE_UUID
       );
-      if(bas_service ) {
+      if (bas_service) {
         this.bas = true;
         this.log(' Getting BAS Characteristic...');
-        this.bas_level = await bas_service.getCharacteristic(this.BAS_LEVEL_UUID);
-  
+        this.bas_level = await bas_service.getCharacteristic(
+          this.BAS_LEVEL_UUID
+        );
+
         let lvl = await this.bas_level.readValue();
         this.battery = lvl.getUint8(0).toString();
         await this.bas_level.startNotifications();
@@ -161,41 +162,42 @@ export class ProximityComponent implements OnInit {
       const dis_service = await this.server.getPrimaryService(
         this.DIS_SERVICE_UUID
       );
-      
-      if(dis_service ) {
 
-        let decoder = new TextDecoder("utf-8");
-        let dis_char : BluetoothRemoteGATTCharacteristic;
+      if (dis_service) {
+        let decoder = new TextDecoder('utf-8');
+        let dis_char: BluetoothRemoteGATTCharacteristic;
 
         try {
-          dis_char = await dis_service.getCharacteristic(this.MODEL_NUMBER_UUID);
+          dis_char = await dis_service.getCharacteristic(
+            this.MODEL_NUMBER_UUID
+          );
           this.model = decoder.decode(await dis_char.readValue());
         } catch (error) {}
-        
+
         try {
-          dis_char = await dis_service.getCharacteristic(this.FIRMWARE_REV_UUID);
+          dis_char = await dis_service.getCharacteristic(
+            this.FIRMWARE_REV_UUID
+          );
           this.fw_rev = decoder.decode(await dis_char.readValue());
         } catch (error) {}
-        
+
         try {
           dis_char = await dis_service.getCharacteristic(this.HW_REV_UUID);
           this.hw_rev = decoder.decode(await dis_char.readValue());
         } catch (error) {}
-        
+
         try {
           dis_char = await dis_service.getCharacteristic(this.SW_REV_UUID);
           this.sw_rev = decoder.decode(await dis_char.readValue());
         } catch (error) {}
-        
+
         try {
           dis_char = await dis_service.getCharacteristic(this.MNF_REV_UUID);
           this.manufacturer = decoder.decode(await dis_char.readValue());
         } catch (error) {}
 
         this.dis = true;
-
       }
-
     } catch (error) {
       this.log('connection failed ' + error);
     }
