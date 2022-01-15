@@ -1,4 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  product,
+  SupportedProductsService,
+} from '../supported-products.service';
 
 declare const M: any;
 
@@ -11,6 +15,8 @@ export class SuotaComponent implements OnInit {
   inputFile: File;
   fileData: Uint8Array;
   message: string = '';
+  errorMessage: string = '';
+  detectedProduct: product;
 
   server: BluetoothRemoteGATTServer;
   spotar_mem_dev: BluetoothRemoteGATTCharacteristic;
@@ -64,17 +70,19 @@ export class SuotaComponent implements OnInit {
     0xff, 0xff, 0xff, 0xff,
   ];
 
-  constructor() {}
+  selectectedProduct: product;
+
+  constructor(private sp: SupportedProductsService) {}
 
   ngOnInit(): void {
     let elem = document.querySelectorAll('#suotamodal') as any;
     let instances = M.Modal.init(elem, {});
-
+    elem = document.querySelectorAll('#suotaerrormodal') as any;
+    instances = M.Modal.init(elem, {});
   }
 
-  saveSelectedProduct(event: Event) {
-
-    console.log(event);
+  saveSelectedProduct(event: product) {
+    this.selectectedProduct = event;
   }
 
   async executeSuota(inputFile: File) {
@@ -86,6 +94,19 @@ export class SuotaComponent implements OnInit {
       this.fileData = new Uint8Array(reader.result as ArrayBuffer);
     };
     reader.readAsArrayBuffer(this.inputFile);
+
+    // detect the product image type
+    try {
+      this.detectedProduct = this.sp.getProductByImageMagic(
+        this.inputFile.slice(0, 2)
+      );
+    } catch (e) {
+      this.errorMessage =
+        'Could not find image header. Input has to contain an image header. Please refer to software update procedure of you product for more information about how to build software image.';
+      let elem = document.querySelectorAll('#suotaerrormodal') as any;
+      elem[0].M_Modal.open();
+      return;
+    }
 
     this.connectSuota();
   }
@@ -170,90 +191,92 @@ export class SuotaComponent implements OnInit {
     this.progress = '0%';
 
     // Try to connect to a BLE device
-      this.log('Requesting Bluetooth Device...');
+    this.log(
+      'Requesting Bluetooth Device... for ' + this.selectectedProduct.prettyName
+    );
 
-      try {
-        device = await navigator.bluetooth.requestDevice(options);
-      } catch (error) {
-        return;
-      }
-      let elem = document.querySelectorAll('#suotamodal') as any;
-      elem[0].M_Modal.open();
-      this.time_start = Date.now();
+    try {
+      device = await navigator.bluetooth.requestDevice(options);
+    } catch (error) {
+      return;
+    }
+    let elem = document.querySelectorAll('#suotamodal') as any;
+    elem[0].M_Modal.open();
+    this.time_start = Date.now();
 
-      device.addEventListener('gattserverdisconnected', disconnectHandler);
+    device.addEventListener('gattserverdisconnected', disconnectHandler);
 
-      this.log('Connected to' + device.name);
+    this.log('Connected to' + device.name);
 
-      this.log('Connecting to GATT Server...');
-      this.server = await device.gatt.connect();
+    this.log('Connecting to GATT Server...');
+    this.server = await device.gatt.connect();
 
-      this.log('Mapping SUotA Service...');
-      const spotar_service = await this.server.getPrimaryService(
-        this.SPOTAR_SERVICE
-      );
+    this.log('Mapping SUotA Service...');
+    const spotar_service = await this.server.getPrimaryService(
+      this.SPOTAR_SERVICE
+    );
 
-      this.log(' Getting SPOTA_SERV_STATUS Characteristic...');
-      this.spotar_serv_status = await spotar_service.getCharacteristic(
-        this.SPOTA_SERV_STATUS
-      );
+    this.log(' Getting SPOTA_SERV_STATUS Characteristic...');
+    this.spotar_serv_status = await spotar_service.getCharacteristic(
+      this.SPOTA_SERV_STATUS
+    );
 
-      this.log('Subscribing to SPOTA_SERV_STATUS notifications ...');
-      await this.spotar_serv_status.startNotifications();
-      this.spotar_serv_status.addEventListener(
-        'characteristicvaluechanged',
-        statusHandler
-      );
+    this.log('Subscribing to SPOTA_SERV_STATUS notifications ...');
+    await this.spotar_serv_status.startNotifications();
+    this.spotar_serv_status.addEventListener(
+      'characteristicvaluechanged',
+      statusHandler
+    );
 
-      this.log(' Getting SPOTA_MEM_DEV Characteristic...');
-      this.spotar_mem_dev = await spotar_service.getCharacteristic(
-        this.SPOTA_MEM_DEV
-      );
+    this.log(' Getting SPOTA_MEM_DEV Characteristic...');
+    this.spotar_mem_dev = await spotar_service.getCharacteristic(
+      this.SPOTA_MEM_DEV
+    );
 
-      this.log(' Getting SPOTA_GPIOMAP Characteristic...');
-      this.spotar_gpiomap = await spotar_service.getCharacteristic(
-        this.SPOTA_GPIOMAP
-      );
+    this.log(' Getting SPOTA_GPIOMAP Characteristic...');
+    this.spotar_gpiomap = await spotar_service.getCharacteristic(
+      this.SPOTA_GPIOMAP
+    );
 
-      this.log(' Getting SPOTA_MEM_INFO Characteristic...');
-      this.spotar_mem_info = await spotar_service.getCharacteristic(
-        this.SPOTA_MEM_INFO
-      );
+    this.log(' Getting SPOTA_MEM_INFO Characteristic...');
+    this.spotar_mem_info = await spotar_service.getCharacteristic(
+      this.SPOTA_MEM_INFO
+    );
 
-      this.log(' Getting SPOTA_PATCH_LEN Characteristic...');
-      this.spotar_patch_len = await spotar_service.getCharacteristic(
-        this.SPOTA_PATCH_LEN
-      );
+    this.log(' Getting SPOTA_PATCH_LEN Characteristic...');
+    this.spotar_patch_len = await spotar_service.getCharacteristic(
+      this.SPOTA_PATCH_LEN
+    );
 
-      this.log(' Getting SPOTA_PATCH_DATA Characteristic...');
-      this.spotar_patch_data = await spotar_service.getCharacteristic(
-        this.SPOTA_PATCH_DATA
-      );
+    this.log(' Getting SPOTA_PATCH_DATA Characteristic...');
+    this.spotar_patch_data = await spotar_service.getCharacteristic(
+      this.SPOTA_PATCH_DATA
+    );
 
-      this.log(' Getting SPOTA_MTU Characteristic...');
-      this.spotar_mtu_size = await spotar_service.getCharacteristic(
-        this.SPOTA_MTU
-      );
+    this.log(' Getting SPOTA_MTU Characteristic...');
+    this.spotar_mtu_size = await spotar_service.getCharacteristic(
+      this.SPOTA_MTU
+    );
 
-      let spotar_mtu_value = await this.spotar_mtu_size.readValue();
+    let spotar_mtu_value = await this.spotar_mtu_size.readValue();
 
-      this.CHUNK_SIZE =
-        (spotar_mtu_value.getUint8(0) + 256 * spotar_mtu_value.getUint8(1)) / 4;
+    this.CHUNK_SIZE =
+      (spotar_mtu_value.getUint8(0) + 256 * spotar_mtu_value.getUint8(1)) / 4;
 
-      this.BLOCK_SIZE = this.CHUNK_SIZE * this.CHUNK_PER_BLOCK;
-      this.log('MTU value ' + this.CHUNK_SIZE);
+    this.BLOCK_SIZE = this.CHUNK_SIZE * this.CHUNK_PER_BLOCK;
+    this.log('MTU value ' + this.CHUNK_SIZE);
 
-      // Initialize SUotA
-      await this.spotar_mem_dev.writeValue(new Uint8Array(this.FLASH_CMD));
+    // Initialize SUotA
+    await this.spotar_mem_dev.writeValue(new Uint8Array(this.FLASH_CMD));
 
-      this.log('Write patch_len: ' + this.BLOCK_SIZE);
-      await this.spotar_patch_len.writeValue(
-        Uint8Array.of(this.BLOCK_SIZE & 0xff, (this.BLOCK_SIZE / 256) & 0xff)
-      );
+    this.log('Write patch_len: ' + this.BLOCK_SIZE);
+    await this.spotar_patch_len.writeValue(
+      Uint8Array.of(this.BLOCK_SIZE & 0xff, (this.BLOCK_SIZE / 256) & 0xff)
+    );
 
-      this.log('Ready to communicate.');
+    this.log('Ready to communicate.');
 
-      this.upload_image();
+    this.upload_image();
   }
 
   async upload_image() {

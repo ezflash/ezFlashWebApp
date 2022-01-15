@@ -10,6 +10,7 @@
     </p>
   </div>
 </div>
+<app-suota-home (selectedFile)="executeSuota($event)"></app-suota-home>
 <div id="suotamodal" class="modal">
   <div class="modal-content" *ngIf="inputFile">
     <h4>SUOTA transfer</h4>
@@ -25,4 +26,12 @@
     <a class="modal-close waves-effect waves-green btn-flat">Close</a>
   </div>
 </div>
-<app-suota-home (selectedFile)="executeSuota($event)"></app-suota-home>
+<div id="suotaerrormodal" class="modal">
+  <div class="modal-content" *ngIf="inputFile">
+    <h4><i class="material-icons error-class">error</i>Error</h4>
+    <p>{{ errorMessage }}</p>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
