@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { WebBluetoothModule } from '@manekinekko/angular-web-bluetooth';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -48,9 +46,6 @@ import { FlasherComponent } from './flasher/flasher.component';
     FormsModule,
     ReactiveFormsModule,
     NgxFileDropModule,
-    WebBluetoothModule.forRoot({
-      enableTracing: false, // or false, this will enable logs in the browser's console
-    }),
     MarkdownModule.forRoot({ loader: HttpClient }),
     DragDropModule,
     HttpClientModule,
