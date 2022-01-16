@@ -1,4 +1,3 @@
-
 /// <reference types="../../../node_modules/@types/web-bluetooth" />
 
 import { HttpHandler } from '@angular/common/http';
@@ -19,7 +18,8 @@ export class DspsComponent implements OnInit {
 
   connected: Boolean = false;
 
-  device: BluetoothRemoteGATTServer;
+  device: BluetoothDevice;
+  server: BluetoothRemoteGATTServer;
   service: BluetoothRemoteGATTService;
   serverRxChar: BluetoothRemoteGATTCharacteristic;
   serverTxChar: BluetoothRemoteGATTCharacteristic;
@@ -33,97 +33,103 @@ export class DspsComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  scanDevice(): void {
-    // let options = {
-    //   filters: [{ services: [this.UUID_SPS] }],
-    //   optionalServices: [this.UUID_SPS],
-    // };
+  public log(msg: string): void {
+    console.log(msg);
+    // this.message = msg;
+  }
 
-    // if (this.connected) {
-    //   console.log('disconnect first');
-    //   this.device.disconnect();
-    //   return;
-    // }
+  async scanDevice() {
 
-    // this.ble.discover$({ filters: [{ services: [this.UUID_SPS] }] }).subscribe({
-    //   next: (gattserver: BluetoothRemoteGATTServer) => {
-    //     if (gattserver) {
-    //       this.device = gattserver;
-    //       this.connected = gattserver.connected;
-    //       this.dataFromServer = '';
+    let serverTxHandler = (ev: Event) => {
+      let event = ev.target as any;
+      let decoder = new TextDecoder();
+      let value = decoder.decode(event.value);
 
-    //       gattserver.device.ongattserverdisconnected = (evt) => {
-    //         this.connected = false;
-    //         this.cdr.detectChanges();
-    //       };
+      console.log('decoded:' + value);
+      if (value != null) {
+        this.dataFromServer += value;
+        console.log(this.dataFromServer);
+      }
+    };
 
-    //       gattserver
-    //         .getPrimaryService(this.UUID_SPS)
-    //         .then((service: BluetoothRemoteGATTService) => {
-    //           this.service = service;
-    //           return service.getCharacteristic(this.UUID_SPS_SERVER_RX);
-    //         })
-    //         .then((rxchar: BluetoothRemoteGATTCharacteristic) => {
-    //           this.serverRxChar = rxchar;
-    //           return this.service.getCharacteristic(this.UUID_SPS_SERVER_TX);
-    //         })
-    //         .then((txchar: BluetoothRemoteGATTCharacteristic) => {
-    //           this.serverTxChar = txchar;
-    //           return this.service.getCharacteristic(this.UUID_SPS_FLOW_CTRL);
-    //         })
-    //         .then((fcc: BluetoothRemoteGATTCharacteristic) => {
-    //           this.serverFlowControl = fcc;
-    //           return this.serverFlowControl.startNotifications();
-    //         })
-    //         .then((_: any) => {
-    //           console.log('>flow control notification started');
-    //           this.serverFlowControl.addEventListener(
-    //             'characteristicvaluechanged',
-    //             (ev: Event) => {
-    //               let event = ev.target as any;
-    //               let decoder = new TextDecoder();
-    //               let value = decoder.decode(event.value);
+    let flowControlHandler = (ev: Event) => {
+      let event = ev.target as any;
+      let decoder = new TextDecoder();
+      let value = decoder.decode(event.value);
 
-    //               console.log('decoded:' + value);
-    //               if (value != null) {
-    //                 this.flowControl = value;
-    //                 console.log(this.flowControl);
-    //               }
-    //             }
-    //           );
-    //           return this.serverTxChar.startNotifications();
-    //         })
-    //         .then((_: any) => {
-    //           console.log('>serverTxChar notification started');
-    //           this.serverTxChar.addEventListener(
-    //             'characteristicvaluechanged',
-    //             (ev: Event) => {
-    //               let event = ev.target as any;
-    //               let decoder = new TextDecoder();
-    //               let value = decoder.decode(event.value);
+      console.log('decoded:' + value);
+      if (value != null) {
+        this.flowControl = value;
+        console.log(this.flowControl);
+      }
+    };
 
-    //               console.log('decoded:' + value);
-    //               if (value != null) {
-    //                 this.dataFromServer += value;
-    //                 console.log(this.dataFromServer);
-    //               }
-    //             }
-    //           );
-    //           return this.serverFlowControl.writeValueWithoutResponse(
-    //             new Uint8Array([1])
-    //           );
-    //         })
-    //         .then((_: any) => {
-    //           console.log('done', _);
-    //         });
-    //     } else {
-    //       console.log('Not Discovered: ', gattserver);
-    //     }
-    //   },
-    //   error: (msg) => {
-    //     console.log('Error discovering: ', msg);
-    //   },
-    // });
+    let disconnectHandler = () => {
+      this.connected = false;
+      // this.spotar_serv_status.removeEventListener(
+      //   'characteristicvaluechanged',
+      //   statusHandler
+      // );
+      // device.removeEventListener('gattserverdisconnected', disconnectHandler);
+      // this.log('Disconnected');
+    };
+
+    let options = {
+      filters: [{ services: [this.UUID_SPS] }],
+      optionalServices: [this.UUID_SPS],
+    };
+
+    if (this.server && this.server.connected) {
+      console.log('disconnect first');
+      this.server.disconnect();
+      return;
+    }
+
+    try {
+      this.device = await navigator.bluetooth.requestDevice(options);
+    } catch (error) {
+      return;
+    }
+    this.device.addEventListener('gattserverdisconnected', disconnectHandler);
+
+    this.log('Connecting to GATT Server...');
+    this.server = await this.device.gatt.connect();
+
+    this.connected = true;
+
+    this.log('Mapping SUotA Service...');
+    const dsps_service = await this.server.getPrimaryService(this.UUID_SPS);
+
+    this.log(' Getting DSPS Rx Characteristic');
+    this.serverRxChar = await dsps_service.getCharacteristic(
+      this.UUID_SPS_SERVER_RX
+    );
+
+    this.log(' Getting DSPS Tx Characteristic');
+    let serverTxChar = await dsps_service.getCharacteristic(
+      this.UUID_SPS_SERVER_TX
+    );
+
+    this.log(' Getting DSPS FLOW control Characteristic');
+    let serverFlowControl = await dsps_service.getCharacteristic(
+      this.UUID_SPS_FLOW_CTRL
+    );
+
+    await serverFlowControl.startNotifications();
+    serverFlowControl.addEventListener(
+      'characteristicvaluechanged',
+      flowControlHandler
+    );
+
+    await serverTxChar.startNotifications();
+    serverTxChar.addEventListener(
+      'characteristicvaluechanged',
+      serverTxHandler
+    );
+
+    serverFlowControl.writeValueWithoutResponse(new Uint8Array([1]));
+
+    
   }
 
   onKey(value: string) {
