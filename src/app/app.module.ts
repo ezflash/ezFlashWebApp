@@ -22,6 +22,8 @@ import { ExampleManagerComponent } from './example-manager/example-manager.compo
 import { ExampleHomeComponent } from './example-manager/example-home/example-home.component';
 import { ExampleViewerComponent } from './example-manager/example-viewer/example-viewer.component';
 import { FlasherComponent } from './flasher/flasher.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
@@ -49,6 +51,12 @@ import { FlasherComponent } from './flasher/flasher.component';
     MarkdownModule.forRoot({ loader: HttpClient }),
     DragDropModule,
     HttpClientModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],
