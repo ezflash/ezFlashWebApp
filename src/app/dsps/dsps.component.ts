@@ -3,7 +3,7 @@
 
 import { HttpHandler } from '@angular/common/http';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { disconnect } from 'process';
+// import { disconnect } from 'process';
 import { defaultThrottleConfig } from 'rxjs/internal/operators/throttle';
 
 @Component({
