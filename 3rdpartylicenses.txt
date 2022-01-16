@@ -41,7 +41,7 @@ MIT
 @angular/router
 MIT
 
-@manekinekko/angular-web-bluetooth
+@angular/service-worker
 MIT
 
 marked
