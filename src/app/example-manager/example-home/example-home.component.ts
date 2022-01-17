@@ -14,7 +14,6 @@ export class ExampleHomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.exampleList = this.apls.getExamplelist();
-    console.log(this.exampleList);
   }
 
   appClicked(title: string) {

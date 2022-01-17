@@ -9,7 +9,7 @@ declare let gtag: Function;
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'ezflashwebapp';
+  title = 'ezFlashWebApp';
 
   currentItem = 'accessibility';
 
