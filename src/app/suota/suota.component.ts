@@ -56,21 +56,21 @@ export class SuotaComponent implements OnInit {
   FLASH_CMD: Uint8Array = new Uint8Array([0x00, 0x00, 0x00, 0x13]); // Target firmware is stored in bank with the oldest image
   EEPROM_CMD: Uint8Array = new Uint8Array([0x00, 0x00, 0x00, 0x12]); // Target firmware is stored in bank with the oldest image
 
+  GPIO_MAP: Uint8Array = new Uint8Array([0x04, 0x01, 0x00, 0x03]); // Target firmware is stored in bank with the oldest image
   BLOCK_SIZE: number = 2048; // Bytes per block over the air (0xA0 = 160 decimal)
+
   CHUNK_SIZE: number = 0x200; // Bytes per block over the air (0xA0 = 160 decimal)
 
   CHUNK_PER_BLOCK: number = 8;
 
-  img_header = [
-    0x70, 0x51, 0xaa, 0x00, 0x0c, 0x69, 0x00, 0x00, 0x50, 0xd2, 0xb6, 0x0d,
-    0x36, 0x2e, 0x30, 0x2e, 0x31, 0x30, 0x2e, 0x35, 0x31, 0x33, 0x00, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xc0, 0x9f, 0xb6, 0x62, 0x00, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff,
-  ];
-
-  selectectedProduct: product;
+  // img_header = [
+  //   0x70, 0x51, 0xaa, 0x00, 0x0c, 0x69, 0x00, 0x00, 0x50, 0xd2, 0xb6, 0x0d,
+  //   0x36, 0x2e, 0x30, 0x2e, 0x31, 0x30, 0x2e, 0x35, 0x31, 0x33, 0x00, 0xff,
+  //   0xff, 0xff, 0xff, 0xff, 0xc0, 0x9f, 0xb6, 0x62, 0x00, 0xff, 0xff, 0xff,
+  //   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  //   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  //   0xff, 0xff, 0xff, 0xff,
+  // ];
 
   constructor(private sp: SupportedProductsService) {}
 
@@ -79,10 +79,6 @@ export class SuotaComponent implements OnInit {
     let instances = M.Modal.init(elem, {});
     elem = document.querySelectorAll('#suotaerrormodal') as any;
     instances = M.Modal.init(elem, {});
-  }
-
-  saveSelectedProduct(event: product) {
-    this.selectectedProduct = event;
   }
 
   async readFileAsync(file: File): Promise<ArrayBuffer> {
@@ -102,12 +98,12 @@ export class SuotaComponent implements OnInit {
   async executeSuota(inputFile: File) {
     this.inputFile = inputFile;
     // wait to get the file read
-    this.fileData = new Uint8Array(await this.readFileAsync(inputFile));
+    let tempData = new Uint8Array(await this.readFileAsync(inputFile));
 
     // detect the product image type
     try {
       this.detectedProduct = this.sp.getProductByImageMagic(
-        this.fileData.slice(0, 2)
+        tempData.slice(0, 2)
       );
     } catch (e) {
       this.errorMessage =
@@ -117,12 +113,17 @@ export class SuotaComponent implements OnInit {
       return;
     }
 
-    if (this.selectectedProduct.name == 'DA14531') {
+    if (this.detectedProduct.name == 'DA14531') {
       // Calculate 8bit checksum and append it to the image
-      // let chksum = 0;
-      // for(let i=0; i<this.fileData.length; i++)
-      //   chksum = 0xFF & (chksum ^ this.fileData[i]);
-      // this.fileData.appendBytes(chksm);
+      let chksum = 0;
+      for (let i = 0; i < tempData.length; i++)
+        chksum = 0xff & (chksum ^ tempData[i]);
+
+      this.fileData = new Uint8Array(tempData.length + 1);
+      this.fileData.set(tempData, 0);
+      this.fileData.set([chksum], this.fileData.length - 1);
+    } else {
+      this.fileData = new Uint8Array(tempData);
     }
 
     this.connectSuota();
@@ -171,9 +172,12 @@ export class SuotaComponent implements OnInit {
             'Update time: ' + (Date.now() - this.time_start) / 1000 + 's'
           );
         }
-      }
-      // Error messages
-      else if (x == 0x07)
+        return;
+      } else if (x == 0x10) {
+        this.log('SUOTA Started!');
+        return;
+        // error messages
+      } else if (x == 0x07)
         this.log(
           'Internal Memory Error. Not enough internal memory space for patch!'
         );
@@ -187,6 +191,9 @@ export class SuotaComponent implements OnInit {
       else if (x == 0x16)
         this.log('Failed to read from external memory device!');
       else this.log('Unknown message ' + x);
+
+      // error has occured, disconnect;
+      this.server.disconnect();
     };
 
     let disconnectHandler = () => {
@@ -210,7 +217,7 @@ export class SuotaComponent implements OnInit {
 
     // Try to connect to a BLE device
     this.log(
-      'Requesting Bluetooth Device... for ' + this.selectectedProduct.prettyName
+      'Requesting Bluetooth Device... for ' + this.detectedProduct.prettyName
     );
 
     try {
@@ -278,26 +285,31 @@ export class SuotaComponent implements OnInit {
 
     let spotar_mtu_value = await this.spotar_mtu_size.readValue();
 
-    this.CHUNK_SIZE =
-      (spotar_mtu_value.getUint8(0) + 256 * spotar_mtu_value.getUint8(1)) / 4;
+    if (this.detectedProduct.name == 'DA14531') {
+      this.BLOCK_SIZE = 160;
+      this.CHUNK_SIZE = 20;
+    } else {
+      this.CHUNK_SIZE =
+        (spotar_mtu_value.getUint8(0) + 256 * spotar_mtu_value.getUint8(1)) / 4;
 
-    this.BLOCK_SIZE = this.CHUNK_SIZE * this.CHUNK_PER_BLOCK;
-    this.log('MTU value ' + this.CHUNK_SIZE);
+      this.BLOCK_SIZE = this.CHUNK_SIZE * this.CHUNK_PER_BLOCK;
+      this.log('CHUNK_SIZE value ' + this.CHUNK_SIZE);
+    }
 
     // Initialize SUotA
+    this.log('Write the FLASH command ' + this.FLASH_CMD);
     await this.spotar_mem_dev.writeValue(new Uint8Array(this.FLASH_CMD));
 
+    if (this.detectedProduct.name == 'DA14531') {
+      this.log('Write the GPIO map');
+      await this.spotar_gpiomap.writeValue(this.GPIO_MAP);
+    }
     this.log('Write patch_len: ' + this.BLOCK_SIZE);
     await this.spotar_patch_len.writeValue(
       Uint8Array.of(this.BLOCK_SIZE & 0xff, (this.BLOCK_SIZE / 256) & 0xff)
     );
 
-    this.log('Ready to communicate.');
-
-    if (this.selectectedProduct.name == 'DA14530') {
-      this.log('Write the GPIO map');
-      await this.spotar_gpiomap.writeValue(new Uint8Array([0, 3, 5, 6]));
-    }
+    this.log('Uploading image.');
 
     this.upload_image();
   }
@@ -306,7 +318,6 @@ export class SuotaComponent implements OnInit {
     // Upload the image in chunks of 20 bytes
     let chunks_sent: number = 0;
     let remaining = this.fileData.length - this.position;
-
     if (remaining < this.BLOCK_SIZE) {
       await this.spotar_patch_len.writeValue(
         Uint8Array.of(remaining, remaining / 256)
