@@ -1,7 +1,7 @@
 {
   "name": "ezflashwebapp",
   "short_name": "ezflashwebapp",
-  "theme_color": "#1976d2",
+  "theme_color": "#64b5f6",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
