@@ -17,6 +17,11 @@ export class SupportedProductsService {
       imageHeaderMagic: [0x51, 0x71],
     },
     {
+      name: 'DA1468X',
+      prettyName: 'DA1468X',
+      imageHeaderMagic: [0x70, 0x61],
+    },
+    {
       name: 'DA14531',
       prettyName: 'DA14530/DA14531',
       imageHeaderMagic: [0x70, 0x51],
