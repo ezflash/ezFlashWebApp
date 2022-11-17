@@ -174,16 +174,25 @@ export class FlasherComponent implements OnInit {
       this.bootstate = 'booterror';
       return;
     }
-
     this.__inputBuffer.length = 0;
-
+    
+    
+    
+    let address;
+    if(this.fileData[0] == 0x50 && this.fileData[1] == 0x70) { // 'Pp'
+      address = 0x0;
+    } else{
+      address = 0x2000;
+    }
+    
     // Send flash command
-    let address = 0x2000;
     let remaining: number = this.fileData.length;
     let chunkSize: number = 0xc000;
     let sentData: number = 0;
     let thischunk: number;
     let retryCount: number = 0;
+
+    console.log(this.fileData.length);
 
     this.flashingState = 'progress';
 
