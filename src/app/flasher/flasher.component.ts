@@ -269,6 +269,18 @@ export class FlasherComponent implements OnInit {
         this.flashingState = 'flashDone';
       }
     }
+    // Send a reset command
+    await this.writeToStream([
+      1,
+      0x80,
+      0,
+      0
+    ]);
+
+    if (!(await this.ack())) {
+      this.flashingState = 'reseterror';
+    }
+
   }
 
   async getFlashCrc(): Promise<number | boolean> {
