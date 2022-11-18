@@ -80,6 +80,57 @@ export class FlasherComponent implements OnInit {
     console.log('closed port');
   }
 
+
+  // function to write in the flash 
+  async  writeToFlash(address, data, length) : Promise<boolean> {
+
+    await this.writeToStream([
+      1,
+      0x12,
+      (length + 5) & 0xff,
+      ((length + 5) >> 8) & 0xff,
+    ]);
+
+    if (!(await this.ack())) {
+      this.flashingState = 'flasherror';
+      return false;
+    }
+
+    let chunk = new Uint8Array(length + 5);
+    chunk.set(
+      [
+        1,
+        address & 0xff,
+        (address >> 8) & 0xff,
+        (address >> 16) & 0xff,
+        (address >> 24) & 0xff,
+      ],
+      0
+    );
+    chunk.set(data, 5);
+
+    await this.writeToStream(chunk);
+
+    let crc16: number = 0xffff;
+    for (let [i, datum] of chunk.entries()) {
+      let dat = datum;
+      for (let j = 0; j < 8; j++) {
+        let need_xor = ((crc16 & 0x8000) >> 15) ^ ((dat & 0x80) >> 7);
+        crc16 = (crc16 << 1) & 0xffff;
+        if (need_xor) {
+          crc16 = (crc16 ^ 0x1021) & 0xffff;
+        }
+        dat = dat << 1;
+      }
+    }
+    let devcrc = await this.getFlashCrc();
+    if (devcrc === false) {
+      return false;
+    }
+    return (devcrc === crc16);
+
+  }
+
   async boot() {
     let sync: Boolean;
     let packet: number[] | null = [];
@@ -120,13 +171,13 @@ export class FlasherComponent implements OnInit {
       alert(err.message);
       return;
     }
-
+    console.log('starting flash');
     this.syncstate = 'syncing';
     this.flashingState = 'idle';
     this.bootstate = 'idle';
 
     let elem = document.querySelectorAll('#flasherModal') as any;
-    // let instance = M.Modal.getInstance(elem[0]);
+
     elem[0].M_Modal.open();
 
     this.readLoop();
@@ -179,69 +230,39 @@ export class FlasherComponent implements OnInit {
     
     
     let address;
+    let burnProdHeader : boolean = false;
+
     if(this.fileData[0] == 0x50 && this.fileData[1] == 0x70) { // 'Pp'
       address = 0x0;
     } else{
-      address = 0x2000;
+      burnProdHeader = true;
+      if(this.fileData[0] == 0x51 && this.fileData[1] == 0x71) { // 'Pp'
+        address = 0x2000;
+      } else {
+        console.error('File format unsupported');
+      }
     }
-    
+
     // Send flash command
     let remaining: number = this.fileData.length;
     let chunkSize: number = 0xc000;
     let sentData: number = 0;
     let thischunk: number;
     let retryCount: number = 0;
-
+    let devcrc;
+    
     console.log(this.fileData.length);
 
     this.flashingState = 'progress';
 
     while (remaining && retryCount <= this.RETRYNUMBER) {
       thischunk = Math.min(remaining, chunkSize);
-      packet.length = 0;
-      await this.writeToStream([
-        1,
-        0x12,
-        (thischunk + 5) & 0xff,
-        ((thischunk + 5) >> 8) & 0xff,
-      ]);
 
-      if (!(await this.ack())) {
-        this.flashingState = 'flasherror';
-        break;
-      }
+      devcrc = await this.writeToFlash(address, this.fileData.subarray(sentData, sentData + thischunk),thischunk);
 
-      let chunk = new Uint8Array(thischunk + 5);
-      chunk.set(
-        [
-          1,
-          address & 0xff,
-          (address >> 8) & 0xff,
-          (address >> 16) & 0xff,
-          (address >> 24) & 0xff,
-        ],
-        0
-      );
-      chunk.set(this.fileData.subarray(sentData, sentData + thischunk), 5);
 
-      await this.writeToStream(chunk);
-
-      let crc16: number = 0xffff;
-      for (let [i, datum] of chunk.entries()) {
-        let dat = datum;
-        for (let j = 0; j < 8; j++) {
-          let need_xor = ((crc16 & 0x8000) >> 15) ^ ((dat & 0x80) >> 7);
-          crc16 = (crc16 << 1) & 0xffff;
-          if (need_xor) {
-            crc16 = (crc16 ^ 0x1021) & 0xffff;
-          }
-          dat = dat << 1;
-        }
-      }
-      let devcrc = await this.getFlashCrc();
 
       if (devcrc === false) {
-      } else if (!(crc16 === devcrc)) {
         retryCount += 1;
         await this.writeToStream([0x15]);
         if (!(await this.nack())) {
@@ -269,6 +290,40 @@ export class FlasherComponent implements OnInit {
         this.flashingState = 'flashDone';
       }
     }
+
+
+    if (burnProdHeader) {
+      let chunk = new Uint8Array(27);
+      chunk.set(
+        [0x50, 0x70, 0x00, 0x20, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0xeb, 0x00, 0xa5, 0xa8, 0x66, 0x00, 0x00, 0x00, 0xaa, 0x11, 0x03, 0x00, 0x01, 0x40, 0x07, 0xc8, 0x4e],
+        0
+      );
+      
+      devcrc = await this.writeToFlash(0X0, chunk,chunk.length);
+      if (devcrc === false) {
+        retryCount += 1;
+        await this.writeToStream([0x15]);
+        if (!(await this.nack())) {
+          this.flashingState = 'flasherror';
+          return;
+        }
+      } else {
+        await this.writeToStream([6]);
+      }
+      devcrc = await this.writeToFlash(0X1000, chunk,chunk.length);
+      if (devcrc === false) {
+        retryCount += 1;
+        await this.writeToStream([0x15]);
+        if (!(await this.nack())) {
+          this.flashingState = 'flasherror';
+          return;
+        }
+      } else {
+        await this.writeToStream([6]);
+      }
+
+    }
+
     // Send a reset command
     await this.writeToStream([
       1,
