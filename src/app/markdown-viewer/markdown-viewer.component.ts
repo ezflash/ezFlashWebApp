@@ -17,7 +17,7 @@ export class MarkdownViewerComponent implements OnInit, AfterViewInit {
   mdurl: string;
 
   ngOnInit(): void {
-    this.mdurl = 'https://raw.githubusercontent.com/dialog-semiconductor/BLE_SDK10_examples/ci_processing/' + this.route.snapshot.paramMap.get('id');
+    this.mdurl = 'https://raw.githubusercontent.com/dialog-semiconductor/BLE_SDK10_examples/main/' + this.route.snapshot.paramMap.get('id');
   }
 
   ngAfterViewInit(): void {
