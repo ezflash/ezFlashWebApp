@@ -86,7 +86,6 @@ export class AppListService {
   getExamplelist(): Observable<Object> {
 
 
-    return this.http.get('assets/projectData.json');
-    // return this.exampleList;
+    return this.http.get('https://s3.eu-central-1.amazonaws.com/lpccs-docs.renesas.com/examples_arfitacts/da1469x/projectData.json');
   }
 }
