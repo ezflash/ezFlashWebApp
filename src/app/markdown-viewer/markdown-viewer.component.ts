@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild,AfterViewInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
 import { FileFetcherService } from '../file-fetcher.service';
 
 @Component({
@@ -6,22 +8,28 @@ import { FileFetcherService } from '../file-fetcher.service';
   templateUrl: './markdown-viewer.component.html',
   styleUrls: ['./markdown-viewer.component.scss'],
 })
-export class MarkdownViewerComponent implements OnInit {
-  constructor(private fileFetcher: FileFetcherService) {}
-
+export class MarkdownViewerComponent implements OnInit, AfterViewInit {
+  constructor(private fileFetcher: FileFetcherService,
+              private route: ActivatedRoute) {}
+  
+  @ViewChild('md') mdview: any; // map servier
   mdFile: string;
+  mdurl: string;
 
   ngOnInit(): void {
-    this.fileFetcher
-      .getTextFile(
-        'https://raw.githubusercontent.com/dialog-semiconductor/BLE_SDK10_examples/main/Readme.md'
-      )
-      .subscribe((result) => {
-        this.mdFile = result;
-      });
+    this.mdurl = 'https://raw.githubusercontent.com/dialog-semiconductor/BLE_SDK10_examples/ci_processing/' + this.route.snapshot.paramMap.get('id');
   }
 
-  onLoad(e): void {}
+  ngAfterViewInit(): void {
+    this.mdview.src = this.mdurl;
+    this.mdview.loadContent();
+  }
 
-  onError(e): void {}
+  onLoad(e): void {
+    // console.log("md Load:",e);
+  }
+  
+  onError(e): void {
+    console.log("md error:",e);
+  }
 }

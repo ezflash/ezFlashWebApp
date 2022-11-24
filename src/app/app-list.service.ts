@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { Observable } from 'rxjs';
 
 export interface appDesc {
   title: string;
@@ -20,7 +22,7 @@ export interface exampleDesc {
   providedIn: 'root',
 })
 export class AppListService {
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   appList: appDesc[] = [
     {
@@ -81,7 +83,10 @@ export class AppListService {
     },
   ];
 
-  getExamplelist(): exampleDesc[] {
-    return this.exampleList;
+  getExamplelist(): Observable<Object> {
+
+
+    return this.http.get('assets/projectData.json');
+    // return this.exampleList;
   }
 }

@@ -1,0 +1,319 @@
+{
+    "examples": [
+        {
+            "path": "connectivity/pc_custom_service_periph",
+            "group": "connectivity",
+            "title": "pc_custom_service_periph",
+            "readmePath": "connectivity/pc_custom_service_periph/Readme.md",
+            "binPath": "connectivity/pc_custom_service_periph/DA1469x-00-Debug_QSPI/pc_custom_service_periph.bin"
+        },
+        {
+            "path": "connectivity/cpp_sensor",
+            "group": "connectivity",
+            "title": "cpp_sensor",
+            "readmePath": "connectivity/cpp_sensor/Readme.md",
+            "binPath": "connectivity/cpp_sensor/DA1469x-00-Debug_QSPI/cpp_sensor.bin"
+        },
+        {
+            "path": "connectivity/cpp_collector",
+            "group": "connectivity",
+            "title": "cpp_collector",
+            "readmePath": "connectivity/cpp_collector/Readme.md",
+            "binPath": "connectivity/cpp_collector/DA1469x-00-Debug_QSPI/cpp_collector.bin"
+        },
+        {
+            "path": "connectivity/ibeacon",
+            "group": "connectivity",
+            "title": "ibeacon",
+            "readmePath": "connectivity/ibeacon/Readme.md",
+            "binPath": "connectivity/ibeacon/DA1469x-00-Debug_QSPI/ibeacon.bin"
+        },
+        {
+            "path": "connectivity/ble_custom_service_sample_code",
+            "group": "connectivity",
+            "title": "ble_custom_service_sample_code",
+            "readmePath": "connectivity/ble_custom_service_sample_code/Readme.md",
+            "binPath": "connectivity/ble_custom_service_sample_code/DA1469x-00-Debug_QSPI/custom_ble_service_sample_code.bin"
+        },
+        {
+            "path": "connectivity/pc_custom_service_central",
+            "group": "connectivity",
+            "title": "pc_custom_service_central",
+            "readmePath": "connectivity/pc_custom_service_central/Readme.md",
+            "binPath": "connectivity/pc_custom_service_central/DA1469x-00-Debug_QSPI/pc_custom_service_central.bin"
+        },
+        {
+            "path": "features/logging_util_example",
+            "group": "features",
+            "title": "logging_util_example",
+            "readmePath": "features/logging_util_example/Readme.md",
+            "binPath": "features/logging_util_example/DA1469x-00-Debug_QSPI/logging_util_example.bin"
+        },
+        {
+            "path": "features/usb_cdc_hid",
+            "group": "features",
+            "title": "usb_cdc_hid",
+            "readmePath": "features/usb_cdc_hid/Readme.md",
+            "binPath": "features/usb_cdc_hid/DA1469x-00-Debug_QSPI/usb_cdc_hid.bin"
+        },
+        {
+            "path": "features/UART_XTAL_TRIM",
+            "group": "features",
+            "title": "UART_XTAL_TRIM",
+            "readmePath": "features/UART_XTAL_TRIM/Readme.md",
+            "binPath": "features/UART_XTAL_TRIM/DA1469x-00-Debug_QSPI/UART_XTAL_TRIM.bin"
+        },
+        {
+            "path": "features/battery_charging",
+            "group": "features",
+            "title": "battery_charging",
+            "readmePath": "features/battery_charging/Readme.md",
+            "binPath": "features/battery_charging/DA1469x-00-Debug_QSPI/battery_charging.bin"
+        },
+        {
+            "path": "features/aes_hash_sample_code",
+            "group": "features",
+            "title": "aes_hash_sample_code",
+            "readmePath": "features/aes_hash_sample_code/Readme.md",
+            "binPath": "features/aes_hash_sample_code/DA1469x-00-Debug_QSPI/crypto_aes_hash_sample_code.bin"
+        },
+        {
+            "path": "features/cmsis_dsp",
+            "group": "features",
+            "title": "cmsis_dsp",
+            "readmePath": "features/cmsis_dsp/Readme.md",
+            "binPath": "features/cmsis_dsp/DA1469x-00-Debug_QSPI/cmsis_dsp.bin"
+        },
+        {
+            "path": "features/wakeup_controller_sample_code",
+            "group": "features",
+            "title": "wakeup_controller_sample_code",
+            "readmePath": "features/wakeup_controller_sample_code/Readme.md",
+            "binPath": "features/wakeup_controller_sample_code/DA1469x-00-Debug_QSPI/wakeup_controller_sample_code.bin"
+        },
+        {
+            "path": "features/da1469x_dk_factory_fw",
+            "group": "features",
+            "title": "da1469x_dk_factory_fw",
+            "readmePath": "features/da1469x_dk_factory_fw/Readme.md",
+            "binPath": "features/da1469x_dk_factory_fw/DA1469x-00-Debug_QSPI/da1469x_dk_factory_fw.bin"
+        },
+        {
+            "path": "features/rtc_sample_code",
+            "group": "features",
+            "title": "rtc_sample_code",
+            "readmePath": "features/rtc_sample_code/Readme.md",
+            "binPath": "features/rtc_sample_code/DA1469x-00-Debug_QSPI/rtc_sample_code.bin"
+        },
+        {
+            "path": "features/usb_msd_fatfs",
+            "group": "features",
+            "title": "usb_msd_fatfs",
+            "readmePath": "features/usb_msd_fatfs/Readme.md",
+            "binPath": "features/usb_msd_fatfs/DA1469x-00-Debug_QSPI/usb_msd_fatfs.bin"
+        },
+        {
+            "path": "features/emwin_demo",
+            "group": "features",
+            "title": "emwin_demo",
+            "readmePath": "features/emwin_demo/Readme.md",
+            "binPath": "features/emwin_demo/DA1469x-Debug_QSPI/emwin_demo.bin"
+        },
+        {
+            "path": "features/cmsis_nn",
+            "group": "features",
+            "title": "cmsis_nn",
+            "readmePath": "features/cmsis_nn/Readme.md",
+            "binPath": "features/cmsis_nn/DA1469x-00-Debug_QSPI/cmsis_nn.bin"
+        },
+        {
+            "path": "features/aes_hash_crypto",
+            "group": "features",
+            "title": "aes_hash_crypto",
+            "readmePath": "features/aes_hash_crypto/Readme.md",
+            "binPath": "features/aes_hash_crypto/DA1469x-00-Debug_QSPI/aes_crypto.bin"
+        },
+        {
+            "path": "features/soc_reporter",
+            "group": "features",
+            "title": "soc_reporter",
+            "readmePath": "features/soc_reporter/Readme.md",
+            "binPath": "features/soc_reporter/DA1469x-00-Debug_QSPI/soc_reporter.bin"
+        },
+        {
+            "path": "features/timers_sample_code",
+            "group": "features",
+            "title": "timers_sample_code",
+            "readmePath": "features/timers_sample_code/Readme.md",
+            "binPath": "features/timers_sample_code/DA1469x-00-Debug_QSPI/timer1_demonstration_sample_code.bin"
+        },
+        {
+            "path": "features/suousb",
+            "group": "features",
+            "title": "suousb",
+            "readmePath": "features/suousb/Readme.md",
+            "binPath": "features/suousb/DA1469x-00-Debug_QSPI/suousb.bin"
+        },
+        {
+            "path": "features/dlg_reset_info",
+            "group": "features",
+            "title": "dlg_reset_info",
+            "readmePath": "features/dlg_reset_info/Readme.md",
+            "binPath": "features/dlg_reset_info/DA1469x-00-Debug_QSPI/dlg_reset_info.bin"
+        },
+        {
+            "path": "flash_driver/is25wp032d",
+            "group": "flash_driver",
+            "title": "is25wp032d",
+            "readmePath": "flash_driver/is25wp032d/Readme.md",
+            "binPath": "flash_driver/is25wp032d/DA1469x-00-Debug_QSPI/is25wp032d.bin"
+        },
+        {
+            "path": "flash_driver/xm25qu64a",
+            "group": "flash_driver",
+            "title": "xm25qu64a",
+            "readmePath": "flash_driver/xm25qu64a/Readme.md",
+            "binPath": "flash_driver/xm25qu64a/DA1469x-00-Debug_QSPI/xm25qu64a.bin"
+        },
+        {
+            "path": "flash_driver/xt25q08b",
+            "group": "flash_driver",
+            "title": "xt25q08b",
+            "readmePath": "flash_driver/xt25q08b/Readme.md",
+            "binPath": "flash_driver/xt25q08b/DA1469x-00-Debug_QSPI/xt25q08b.bin"
+        },
+        {
+            "path": "flash_driver/en25s16",
+            "group": "flash_driver",
+            "title": "en25s16",
+            "readmePath": "flash_driver/en25s16/Readme.md",
+            "binPath": "flash_driver/en25s16/DA1469x-00-Debug_QSPI/en25s16.bin"
+        },
+        {
+            "path": "flash_driver/gd25lq128",
+            "group": "flash_driver",
+            "title": "gd25lq128",
+            "readmePath": "flash_driver/gd25lq128/Readme.md",
+            "binPath": "flash_driver/gd25lq128/DA1469x-00-Debug_QSPI/gd25lq128.bin"
+        },
+        {
+            "path": "flash_driver/p25q32le",
+            "group": "flash_driver",
+            "title": "p25q32le",
+            "readmePath": "flash_driver/p25q32le/Readme.md",
+            "binPath": "flash_driver/p25q32le/DA1469x-00-Debug_QSPI/p25q32le.bin"
+        },
+        {
+            "path": "helpers/bare_metal_blinky",
+            "group": "helpers",
+            "title": "bare_metal_blinky",
+            "readmePath": "helpers/bare_metal_blinky/Readme.md",
+            "binPath": "helpers/bare_metal_blinky/DA1469x-00-Debug_QSPI/bare_metal_blinky.bin"
+        },
+        {
+            "path": "helpers/arm_cortex_m33_fault_handling",
+            "group": "helpers",
+            "title": "arm_cortex_m33_fault_handling",
+            "readmePath": "helpers/arm_cortex_m33_fault_handling/Readme.md",
+            "binPath": "helpers/arm_cortex_m33_fault_handling/DA1469x-00-Debug_QSPI/arm_m33_debugging.bin"
+        },
+        {
+            "path": "interfaces/UART_Adapter_example",
+            "group": "interfaces",
+            "title": "UART_Adapter_example",
+            "readmePath": "interfaces/UART_Adapter_example/Readme.md",
+            "binPath": "interfaces/UART_Adapter_example/DA1469x-00-Debug_QSPI/UART_Adapter_example.bin"
+        },
+        {
+            "path": "interfaces/snc_sdadc_sample_code",
+            "group": "interfaces",
+            "title": "snc_sdadc_sample_code",
+            "readmePath": "interfaces/snc_sdadc_sample_code/Readme.md",
+            "binPath": "interfaces/snc_sdadc_sample_code/DA1469x-00-Debug_QSPI/snc_sdadc_sample_code.bin"
+        },
+        {
+            "path": "interfaces/led_driver",
+            "group": "interfaces",
+            "title": "led_driver",
+            "readmePath": "interfaces/led_driver/Readme.md",
+            "binPath": "interfaces/led_driver/DA1469x-00-Debug_QSPI/led_driver.bin"
+        },
+        {
+            "path": "interfaces/spi_adapter_sample_code",
+            "group": "interfaces",
+            "title": "spi_adapter_sample_code",
+            "readmePath": "interfaces/spi_adapter_sample_code/Readme.md",
+            "binPath": "interfaces/spi_adapter_sample_code/DA1469x-00-Debug_QSPI/spi_adapter_sample_code.bin"
+        },
+        {
+            "path": "interfaces/snc_spi_template_sample_code",
+            "group": "interfaces",
+            "title": "snc_spi_template_sample_code",
+            "readmePath": "interfaces/snc_spi_template_sample_code/Readme.md",
+            "binPath": "interfaces/snc_spi_template_sample_code/DA1469x-00-Debug_QSPI/snc_spi_template_sample_code.bin"
+        },
+        {
+            "path": "interfaces/spi_example",
+            "group": "interfaces",
+            "title": "spi_example",
+            "readmePath": "interfaces/spi_example/Readme.md",
+            "binPath": "interfaces/spi_example/DA1469x-00-Debug_QSPI/spi_example.bin"
+        },
+        {
+            "path": "interfaces/adc_example",
+            "group": "interfaces",
+            "title": "adc_example",
+            "readmePath": "interfaces/adc_example/Readme.md",
+            "binPath": "interfaces/adc_example/DA1469x-00-Debug_QSPI/ADC example.bin"
+        },
+        {
+            "path": "interfaces/snc_i2c_template_sample_code",
+            "group": "interfaces",
+            "title": "snc_i2c_template_sample_code",
+            "readmePath": "interfaces/snc_i2c_template_sample_code/Readme.md",
+            "binPath": "interfaces/snc_i2c_template_sample_code/DA1469x-00-Debug_QSPI/snc_i2c_template_sample_code.bin"
+        },
+        {
+            "path": "interfaces/UART_Bridge",
+            "group": "interfaces",
+            "title": "UART_Bridge",
+            "readmePath": "interfaces/UART_Bridge/Readme.md",
+            "binPath": "interfaces/UART_Bridge/DA1469x-00-Debug_QSPI/UART_Bridge.bin"
+        },
+        {
+            "path": "interfaces/smotor_sample_code",
+            "group": "interfaces",
+            "title": "smotor_sample_code",
+            "readmePath": "interfaces/smotor_sample_code/Readme.md",
+            "binPath": "interfaces/smotor_sample_code/DA1469x-00-Debug_QSPI/smotor_sample_code.bin"
+        },
+        {
+            "path": "interfaces/audio_example",
+            "group": "interfaces",
+            "title": "audio_example",
+            "readmePath": "interfaces/audio_example/Readme.md",
+            "binPath": "interfaces/audio_example/DA1469x-00-Debug_QSPI/audio_example.bin"
+        },
+        {
+            "path": "interfaces/i2c_example",
+            "group": "interfaces",
+            "title": "i2c_example",
+            "readmePath": "interfaces/i2c_example/Readme.md",
+            "binPath": "interfaces/i2c_example/DA1469x-00-Debug_QSPI/i2c_example.bin"
+        },
+        {
+            "path": "interfaces/gpio_handling_sample_code",
+            "group": "interfaces",
+            "title": "gpio_handling_sample_code",
+            "readmePath": "interfaces/gpio_handling_sample_code/Readme.md",
+            "binPath": "interfaces/gpio_handling_sample_code/DA1469x-00-Debug_QSPI/gpio_handling_sample_code.bin"
+        }
+    ],
+    "groups": [
+        "connectivity",
+        "features",
+        "flash_driver",
+        "helpers",
+        "interfaces"
+    ]
+}

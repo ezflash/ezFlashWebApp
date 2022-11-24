@@ -15,7 +15,7 @@ import { DngComponent } from './dsps/dng/dng.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MarkdownViewerComponent } from './markdown-viewer/markdown-viewer.component';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule } from './ngx-markdown/lib/src/markdown.module';
 import { HomeComponent } from './home/home.component';
 import { ProximityComponent } from './proximity/proximity.component';
 import { ExampleManagerComponent } from './example-manager/example-manager.component';
