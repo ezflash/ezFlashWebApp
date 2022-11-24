@@ -32,4 +32,8 @@ export class MarkdownViewerComponent implements OnInit, AfterViewInit {
   onError(e): void {
     console.log("md error:",e);
   }
+
+  flashMe() : void {
+    
+  }
 }
