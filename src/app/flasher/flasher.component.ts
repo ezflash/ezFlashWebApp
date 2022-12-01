@@ -77,7 +77,7 @@ export class FlasherComponent implements OnInit {
       } catch {}
     }
     this.port = null;
-    console.log('closed port');
+
   }
 
 
@@ -171,7 +171,7 @@ export class FlasherComponent implements OnInit {
       alert(err.message);
       return;
     }
-    console.log('starting flash');
+    
     this.syncstate = 'syncing';
     this.flashingState = 'idle';
     this.bootstate = 'idle';
@@ -253,8 +253,6 @@ export class FlasherComponent implements OnInit {
     let retryCount: number = 0;
     let devcrc;
     
-    console.log(this.fileData.length);
-
     this.flashingState = 'progress';
 
     while (remaining && retryCount <= this.RETRYNUMBER) {

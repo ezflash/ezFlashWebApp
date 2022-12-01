@@ -7,7 +7,7 @@ import { BooterComponent } from './booter/booter.component';
 import { SuotaComponent } from './suota/suota.component';
 import { ExampleManagerComponent } from './example-manager/example-manager.component';
 import { HomeComponent } from './home/home.component';
-import { FlasherComponent } from './flasher/flasher.component';
+import { FlasherHomeComponent } from './flasher/flasher-home/flasher-home.component';
 import { ProximityComponent } from './proximity/proximity.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'prox', component: ProximityComponent },
   { path: 'suota', component: SuotaComponent },
   { path: 'booter', component: BooterComponent },
-  { path: 'flasher', component: FlasherComponent },
+  { path: 'flasher', component: FlasherHomeComponent },
   { path: 'examples', component: ExampleManagerComponent },
   { path: 'md', component: MarkdownViewerComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
