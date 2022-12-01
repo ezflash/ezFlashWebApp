@@ -22,6 +22,9 @@ export interface exampleDesc {
   providedIn: 'root',
 })
 export class AppListService {
+
+  artifactsBaseURL : string = 'https://s3.eu-central-1.amazonaws.com/lpccs-docs.renesas.com/examples_arfitacts/da1469x/';
+
   constructor(private http: HttpClient) {}
 
   appList: appDesc[] = [
@@ -68,24 +71,14 @@ export class AppListService {
     return this.appList;
   }
 
-  exampleList: exampleDesc[] = [
-    {
-      title: 'cpp_collector',
-      group: 'connectivity',
-      readmePath: 'connectivity/cpp_collector/Readme.md',
-      routerlink: 'prox',
-    },
-    {
-      title: 'cpp_sensor',
-      group: 'connectivity',
-      readmePath: '/connectivity/cpp_sensor/Readme.md',
-      routerlink: 'prox',
-    },
-  ];
 
   getExamplelist(): Observable<Object> {
 
 
-    return this.http.get('https://s3.eu-central-1.amazonaws.com/lpccs-docs.renesas.com/examples_arfitacts/da1469x/projectData.json');
+    return this.http.get( this.artifactsBaseURL + 'projectData.json');
+  }
+
+  getBinURL( ex: string): string {
+    return( this.artifactsBaseURL + ex);
   }
 }
