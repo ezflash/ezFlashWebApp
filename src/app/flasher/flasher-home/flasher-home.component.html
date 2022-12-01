@@ -1,0 +1,21 @@
+
+<h1 class="center-align">Flasher</h1>
+<div class="container">
+  <div class="section">
+    <p class="caption">
+      Write application data in the flash. Drag & drop arbitrary number of files
+      and select the one to write in the flash. On flash request, the serial
+      port selection box will followed by a dialog window monitoring the flash
+      progress.
+    </p>
+  </div>
+  <div class="section">
+    <a class="waves-effect waves-light btn" (click)="flasher.disconnect()"
+      ><i class="material-icons left">cancel</i>Disconnect</a
+    >
+    <p class="caption">Disconnect the attached board</p>
+  </div>
+</div>
+<app-suota-home (selectedFile)="flasher.updateFileList($event)"></app-suota-home>
+
+<app-flasher #flasher></app-flasher>

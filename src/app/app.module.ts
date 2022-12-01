@@ -25,6 +25,7 @@ import { FlasherComponent } from './flasher/flasher.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ProductSelectorComponent } from './product-selector/product-selector.component';
+import { FlasherHomeComponent } from './flasher/flasher-home/flasher-home.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,6 +43,7 @@ import { ProductSelectorComponent } from './product-selector/product-selector.co
     ExampleViewerComponent,
     FlasherComponent,
     ProductSelectorComponent,
+    FlasherHomeComponent,
   ],
   imports: [
     BrowserModule,
