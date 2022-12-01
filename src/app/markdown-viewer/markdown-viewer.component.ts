@@ -17,13 +17,18 @@ export class MarkdownViewerComponent implements OnInit, AfterViewInit {
   @ViewChild('md') mdview: any;
   @ViewChild('flasher') flasher: any;
 
+  repoUrl: string = 'https://github.com/dialog-semiconductor/BLE_SDK10_examples/tree/main/';
   baseUrl: string = 'https://raw.githubusercontent.com/dialog-semiconductor/BLE_SDK10_examples/main/';
 
   mdFile: string;
   mdurl: string;
   binURL: string;
+  ex: string;
 
   ngOnInit(): void {
+
+    let md = this.route.snapshot.paramMap.get('id');
+    this.ex = md.substring(0,md.lastIndexOf('/'));
     this.mdurl = this.baseUrl + this.route.snapshot.paramMap.get('id');
 
     this.apls.getExamplelist().subscribe((res)=>{

@@ -1,11 +1,23 @@
 <app-flasher #flasher></app-flasher>
 <div class="container">
-  <br>
-    <button
-    class="btn waves-effect waves-light"
-    (click)="flashMe()">
-    Run me<i class="material-icons right">send</i>
-  </button>
+  <div class="row">
+    <div class="col s6 left-align">
+      <br>
+      <button
+        class="btn waves-effect waves-light"
+        (click)="flashMe()">
+        Run me<i class="material-icons right">send</i>
+      </button>
+    </div>
+    <div class="col s6 right-align">
+      <br>
+        <a href="{{ repoUrl }}{{ ex }}"
+        >
+          <img src="assets/GitHub-Mark-32px.png" alt="github"  style="vertical-align:middle">
+          <span> Find me on GitHub</span>
+        </a>
+    </div>
+  </div>
 
   <markdown
     #md
