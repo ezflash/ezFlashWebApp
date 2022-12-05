@@ -237,11 +237,39 @@ export class FlasherComponent implements OnInit {
       address = 0x0;
     } else{
       burnProdHeader = true;
-      if(this.fileData[0] == 0x51 && this.fileData[1] == 0x71) { // 'Pp'
-        address = 0x2000;
-      } else {
-        address = 0x2400;
+      address = 0x2000;
+      if(this.fileData[0] != 0x51 || this.fileData[1] != 0x71) { // 'Pp'
         burnImgHeader = true;
+
+        let chunk = new Uint8Array(1024);
+        chunk.set(
+          [ 0x51, 0x71, 0x90, 0x0e, 0x05, 0x00, 0x99, 0xe2,
+            0x70, 0xec, 0x31, 0x2e, 0x30, 0x2e, 0x30, 0x2e,
+            0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x60, 0xff, 0x52, 0x5c, 0x00, 0x04,
+            0x00, 0x00, 0xaa, 0x22, 0x00, 0x00, 0xaa, 0x44,
+            0x00, 0x00],
+          0
+        );
+        
+        let image = new Uint8Array(1024 + this.fileData.length);
+        for(let i=42;i< image.length;i++){
+          image.set([0xFF],i);
+        }
+        image.set(
+          [ 0x51, 0x71, 0x90, 0x0e, 0x05, 0x00, 0x99, 0xe2,
+            0x70, 0xec, 0x31, 0x2e, 0x30, 0x2e, 0x30, 0x2e,
+            0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x60, 0xff, 0x52, 0x5c, 0x00, 0x04,
+            0x00, 0x00, 0xaa, 0x22, 0x00, 0x00, 0xaa, 0x44,
+            0x00, 0x00],
+          0
+        );
+        image.set(this.fileData,1024)
+        image.set(this.fileData,1024)
+        
+
+        this.fileData = image;
       }
     }
 
@@ -291,29 +319,6 @@ export class FlasherComponent implements OnInit {
       }
     }
 
-    if (burnImgHeader) {
-      let chunk = new Uint8Array(42);
-      chunk.set(
-        [ 0x51, 0x71, 0x90, 0x0e, 0x05, 0x00, 0x99, 0xe2,
-          0x70, 0xec, 0x31, 0x2e, 0x30, 0x2e, 0x30, 0x2e,
-          0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x60, 0xff, 0x52, 0x5c, 0x00, 0x04,
-          0x00, 0x00, 0xaa, 0x22, 0x00, 0x00, 0xaa, 0x44,
-          0x00, 0x00],
-        0
-      );
-      devcrc = await this.writeToFlash(0x2000, chunk,chunk.length);
-      if (devcrc === false) {
-        retryCount += 1;
-        await this.writeToStream([0x15]);
-        if (!(await this.nack())) {
-          this.flashingState = 'flasherror';
-          return;
-        }
-      } else {
-        await this.writeToStream([6]);
-      }
-    }
 
     if (burnProdHeader) {
       let chunk = new Uint8Array(27);
@@ -384,7 +389,10 @@ export class FlasherComponent implements OnInit {
   async smartbondSync(): Promise<string> {
     for (let i = 0; i < 500; i++) {
       while (this.__inputBuffer.length > 0) {
-        if (this.__inputBuffer[0] === 2) {
+        if (this.__inputBuffer.length > 1) {
+          this.__inputBuffer.length = 0;
+        } else if (this.__inputBuffer[0] === 2) {
+          console.log(this.__inputBuffer);
           this.__inputBuffer.length = 0;
           return 'synced';
         } else if (this.__inputBuffer[0] === 7) {
